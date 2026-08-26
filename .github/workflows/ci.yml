@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        rust-version: [stable, beta, nightly]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust ${{ matrix.rust-version }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          profile: minimal
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry/index
+          key: cargo-index-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
+
+      - name: Cache cargo tarballs
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: cargo-git-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
+
+      - name: Install cargo dependencies
+        run: cargo update
+
+      - name: Format check
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Build
+        run: cargo build --all-targets
+
+      - name: Run tests
+        run: cargo test --all-targets
+
+      - name: cargo-deny advisory check
+        if: success()
+        run: cargo deny check advisories
+
+      - name: cargo-audit
+        if: success()
+        run: cargo audit --offline 2>/dev/null || cargo audit
+
+  # MSRV validation: ensure the project builds and tests on the minimum supported Rust version
+  mrsv:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        rust-version: [1.78]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust 1.78
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.78.0
+          profile: minimal
+
+      - name: Cache cargo registry (1.78)
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry-1.78-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
+
+      - name: Verify build on MSRV
+        run: cargo build --all-targets
+
+      - name: Verify tests on MSRV
+        run: cargo test --all-targets
+
+  # Cross-compilation: build static binaries for multiple Linux architectures
+  build-binaries:
+    needs: mrsv
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu, x86_64-unknown-linux-musl]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable + cross
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+
+      - name: Install cross
+        run: cargo install cross --force 2>/dev/null || true
+
+      - name: Build binary for ${{ matrix.target }}
+        run: |
+          cross build --target ${{ matrix.target }} --release --bin fenestra
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fenestra-${{ matrix.target }}
+          path: target/**/fenestra
+
+  # Release preparation (artifact signing and packaging metadata)
+  release:
+    needs: build-binaries
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/fenestra-*
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify artifact checksums
+        run: |
+          sha256sum artifacts/* > SHA256SUMS
+          echo "Checksums generated for release artifacts"

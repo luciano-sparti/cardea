@@ -1,0 +1,64 @@
+[package]
+name = "fenestra"
+version = "0.1.0"
+edition = "2021"
+authors = ["Fenestra Contributors"]
+description = "A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Luciano-Sparti/fenestra"
+homepage = "https://github.com/Luciano-Sparti/fenestra"
+keywords = ["tui", "file-manager", "ratatui", "explorer", "terminal"]
+categories = ["command-line-utilities", "filesystem"]
+
+[[bin]]
+name = "fenestra"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = { version = "0.29", features = ["all-widgets", "crossterm", "serde"] }
+crossterm = { version = "0.28", features = ["event-stream"] }
+tokio = { version = "1.43", features = ["full"] }
+futures = "0.3"
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+notify = "8.0"
+compact_str = { version = "0.9", features = ["serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+natord = "1.0"
+trash = "5.2"
+open = "5.3"
+libc = "0.2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+syntect = { version = "5", default-features = false, features = ["default-fancy"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp", "ico", "tiff"] }
+ratatui-image = { version = "8.0", default-features = false }
+zip = { version = "8.3", default-features = false }
+tar = "0.4"
+flate2 = "1"
+xz2 = { version = "0.1", features = ["static"] }
+sevenz-rust = "0.6"
+mime_guess = "2"
+sha2 = "0.10"
+lscolors = { version = "0.20", default-features = false }
+
+[dev-dependencies]
+tempfile = "3.17"
+image = { version = "0.25", default-features = false, features = ["png"] }
+zip = { version = "8.3", default-features = false }
+tar = "0.4"
+flate2 = "1"
+xz2 = { version = "0.1", features = ["static"] }
+sevenz-rust = "0.6"
+proptest = "1.11.0"
+insta = "1.48.0"
+criterion = "0.8.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

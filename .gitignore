@@ -1,0 +1,24 @@
+# Build & compilation artifacts
+/target/
+**/*.rs.bk
+*.bk
+*.profraw
+*.profdata
+coverage/
+
+# Development artifacts & internal planning
+PLAN.md
+scratch/
+notes/
+*.tmp
+
+# Editor & IDE configs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
