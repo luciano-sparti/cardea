@@ -1,5 +1,5 @@
-use crossterm::event::KeyModifiers;
 use cardea::config::{parse_key_str, ActionContext, Config, UserAction, CONFIG_VERSION};
+use crossterm::event::KeyModifiers;
 
 #[test]
 fn test_config_roundtrip_with_version_and_actions() {

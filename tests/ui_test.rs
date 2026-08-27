@@ -1,9 +1,9 @@
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use cardea::app::{App, ButtonKind, Focus};
 use cardea::config::{Config, SortColumn, SortDirection};
 use cardea::event::AppEvent;
 use cardea::theme::Theme;
 use cardea::ui;
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::backend::TestBackend;
 use ratatui::Terminal;
 use std::path::PathBuf;

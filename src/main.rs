@@ -1,18 +1,18 @@
 use std::io::stdout;
 use std::path::PathBuf;
 
-use clap::{CommandFactory, Parser};
-use crossterm::{
-    event::{DisableMouseCapture, EnableMouseCapture},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
 use cardea::app::App;
 use cardea::config::Config;
 use cardea::event::{AppEvent, EventHandler};
 use cardea::theme::watcher::ThemeWatcher;
 use cardea::theme::Theme;
 use cardea::ui;
+use clap::{CommandFactory, Parser};
+use crossterm::{
+    event::{DisableMouseCapture, EnableMouseCapture},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 
