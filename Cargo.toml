@@ -2,7 +2,7 @@
 name = "fenestra-cli"
 version = "1.0.0"
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.88"
 authors = ["Fenestra Contributors"]
 description = "A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics"
 license = "MIT"

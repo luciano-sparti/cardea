@@ -47,15 +47,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust 1.85.0
+      - name: Install Rust 1.88.0
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.85.0
+          toolchain: 1.88.0
 
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          key: msrv-1.85
+          key: msrv-1.88
 
       - name: Verify build on MSRV
         run: cargo check --all-targets --locked
