@@ -8,7 +8,7 @@ fn benchmark_format_sizes(c: &mut Criterion) {
 
     for &size in &sizes {
         c.bench_with_input(BenchmarkId::new("format_size", size), &size, |b, &size| {
-            b.iter(|| std::hint::black_box(fenestra::fs::format_size(size)));
+            b.iter(|| std::hint::black_box(cardea::fs::format_size(size)));
         });
     }
 }

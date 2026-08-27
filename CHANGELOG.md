@@ -1,31 +1,16 @@
 # Changelog
 
-All notable changes to **Fenestra** will be documented in this file.
+All notable changes to **Cardea** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [1.0.2] - 2026-08-27
-
-### Fixed
-- **Markdown Preview Crash**: Fixed infinite loop when parsing unmatched formatting characters (`*`, `_`, `` ` ``, `[`) and fixed panic on multi-byte UTF-8 character boundaries.
-
----
-
-## [1.0.1] - 2026-08-27
-
-### Fixed
-- **Table Checkboxes**: Only display multi-selection checkboxes when multiple items are actively selected.
-- **Breadcrumb Spacing**: Added proper whitespace separation between path icons and directory text to prevent glyph clipping.
-- **Environment Detection**: Improved deterministic headless CI test handling for truecolor vs ANSI themes.
-
----
-
 ## [1.0.0] - 2026-08-27
 
-### Added
+### Initial Release
+- **Cardea**: Renamed from *Fenestra* (named after the Roman goddess of thresholds, hinges, and doorways).
 - **Desktop-Style Shell**: Hierarchical collapsible tree sidebar, sortable details table with virtual scrolling for 100k+ files, and clickable breadcrumb chips with sibling directory dropdown popovers.
 - **Hybrid Input**: Seamless mouse ergonomics (click, double-click, drag & drop, column resize) paired with complete Vim/arrow keyboard controls.
 - **Multimodal File Previews**:

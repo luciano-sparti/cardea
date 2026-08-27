@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Fenestra
+Name=Cardea
 Comment=A keyboard-driven, mouse-capable terminal file explorer
 GenericName=File Manager
-Exec=fenestra %U
+Exec=cardea %U
 Icon=system-file-manager
 Terminal=true
 Type=Application

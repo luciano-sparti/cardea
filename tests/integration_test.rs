@@ -1,9 +1,9 @@
-//! Integration tests for Fenestra core functionality.
+//! Integration tests for Cardea core functionality.
 //! Tests config loading, terminal rendering, and directory operations.
 
 use std::io::Write;
 
-use fenestra::config::Config;
+use cardea::config::Config;
 use ratatui::backend::TestBackend;
 use ratatui::Terminal;
 use tempfile::tempdir;
@@ -41,7 +41,7 @@ fn test_terminal_rendering_headless() {
 
     terminal
         .draw(|f| {
-            let p = Paragraph::new("Fenestra File Explorer").style(Style::default());
+            let p = Paragraph::new("Cardea File Explorer").style(Style::default());
             f.render_widget(p, f.area());
         })
         .expect("Draw should succeed");

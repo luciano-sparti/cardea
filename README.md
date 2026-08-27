@@ -1,24 +1,24 @@
 ```
-                      ███████╗███████╗███╗   ██╗███████╗███████╗████████╗██████╗  █████╗ 
-                      ██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗
-                      █████╗  █████╗  ██╔██╗ ██║█████╗  ███████╗   ██║   ██████╔╝███████║
-                      ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══██╗██╔══██║
-                      ██║     ███████╗██║ ╚████║███████╗███████║   ██║   ██║  ██║██║  ██║
-                      ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+                       ██████╗  █████╗ ██████╗ ██████╗ ███████╗ █████╗ 
+                      ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗
+                      ██║      ███████║██████╔╝██║  ██║█████╗  ███████║
+                      ██║      ██╔══██║██╔══██╗██║  ██║██╔══╝  ██╔══██║
+                      ╚██████╗ ██║  ██║██║  ██║██████╔╝███████╗██║  ██║
+                       ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
 ```
 
 <div align="center">
 
 ### A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics.
 
-[![Crates.io](https://img.shields.io/crates/v/fenestra-cli.svg?logo=rust)](https://crates.io/crates/fenestra-cli)
-[![CI](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/cardea.svg?logo=rust)](https://crates.io/crates/cardea)
+[![CI](https://github.com/Luciano-Sparti/cardea/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/cardea/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust: 1.88+](https://img.shields.io/badge/Rust-1.88%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![Built with Ratatui](https://img.shields.io/badge/TUI-Ratatui%200.29-green.svg)](https://ratatui.rs)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux)](https://kernel.org)
 
-[Features](#-features) • [Why Fenestra](#-why-fenestra) • [Installation](#-installation) • [Keybindings](#-keybindings) • [Configuration](#-configuration) • [Technical Architecture](#-technical-architecture)
+[Features](#-features) • [Why Cardea](#-why-cardea) • [Installation](#-installation) • [Keybindings](#-keybindings) • [Configuration](#-configuration) • [Technical Architecture](#-technical-architecture)
 
 </div>
 
@@ -26,13 +26,13 @@
 
 ## 🪟 Overview
 
-**Fenestra** (Latin for *window*) bridges the gap between terminal efficiency and modern desktop ergonomics. While existing TUI file managers rely on minimalist Miller columns or dual-pane orthodox layouts, Fenestra recreates the intuitive visual language of modern desktop explorers (like KDE Dolphin and Windows File Explorer) directly inside your terminal — complete with **full mouse interaction**, **interactive breadcrumbs**, **collapsible directory trees**, and **rich multimodal file previews**.
+**Cardea** (named after the Roman goddess of thresholds, hinges, and doorways) bridges the gap between terminal efficiency and modern desktop ergonomics. While existing TUI file managers rely on minimalist Miller columns or dual-pane orthodox layouts, Cardea recreates the intuitive visual language of modern desktop explorers (like KDE Dolphin and Windows File Explorer) directly inside your terminal — complete with **full mouse interaction**, **interactive breadcrumbs**, **collapsible directory trees**, and **rich multimodal file previews**.
 
 ---
 
-## 💡 Why Fenestra?
+## 💡 Why Cardea?
 
-| Capability | Fenestra | Traditional TUI Managers (*ranger*, *lf*, *nnn*, *yazi*) |
+| Capability | Cardea | Traditional TUI Managers (*ranger*, *lf*, *nnn*, *yazi*) |
 | :--- | :--- | :--- |
 | **Shell Layout** | **Desktop Explorer** (Sidebar tree + Breadcrumbs + Sortable details table) | Miller columns or dual text panes |
 | **Mouse Interaction** | **Full First-Class Support** (Click, double-click, drag & drop, scroll, column resize) | Keyboard-focused; partial or minimal mouse support |
@@ -82,21 +82,21 @@
 Install the latest prebuilt release binary, man pages, shell completions, and desktop entry with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/Luciano-Sparti/fenestra/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Luciano-Sparti/cardea/main/install.sh | bash
 ```
 
 ### 2. Cargo (crates.io)
 
 ```bash
-cargo install fenestra-cli
+cargo install cardea
 ```
 
 ### 3. Building from Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/Luciano-Sparti/fenestra.git
-cd fenestra
+git clone https://github.com/Luciano-Sparti/cardea.git
+cd cardea
 
 # Build and package locally
 ./scripts/package.sh
@@ -111,13 +111,13 @@ cargo install --path .
 
 ```bash
 # Launch in the current directory
-fenestra
+cardea
 
 # Launch into a specific path
-fenestra ~/Documents/Projects
+cardea ~/Documents/Projects
 
 # View CLI options
-fenestra --help
+cardea --help
 ```
 
 ---
@@ -163,13 +163,13 @@ fenestra --help
 | `p` | View selection read-only in `$PAGER` |
 | `` ` `` / `F4` | Launch terminal shell in current directory |
 | `?` / `F1` | Open interactive keybinding cheatsheet |
-| `q` / `Ctrl+Q` | Quit Fenestra |
+| `q` / `Ctrl+Q` | Quit Cardea |
 
 ---
 
 ## ⚙️ Configuration
 
-Fenestra is configured via a clean TOML file located at `~/.config/fenestra/config.toml`. The configuration is auto-generated on first launch if not present:
+Cardea is configured via a clean TOML file located at `~/.config/cardea/config.toml`. The configuration is auto-generated on first launch if not present:
 
 ```toml
 version = 1
@@ -219,7 +219,7 @@ args = ["xf", "{file}"]
 
 ### Architecture & Internals
 
-Fenestra is engineered from the ground up for maximum throughput, low memory footprint, and guaranteed frame responsiveness:
+Cardea is engineered from the ground up for maximum throughput, low memory footprint, and guaranteed frame responsiveness:
 
 ```mermaid
 flowchart TD
@@ -277,7 +277,7 @@ flowchart TD
 ### Project Directory Structure
 
 ```text
-fenestra/
+cardea/
 ├── src/
 │   ├── lib.rs             # Crate root
 │   ├── main.rs            # Entrypoint, terminal initialization, panic hook
@@ -314,7 +314,7 @@ fenestra/
 - [x] **Safe Operations & Multi-View**: Async file ops, Freedesktop Trash integration, tabs & dual-pane mode.
 - [x] **Rich Previews & Polish**: Syntect syntax highlighting, Kitty/Sixel image graphics, archive inspection, live Omarchy theme sync.
 - [x] **Extended Integrations**: Custom keybinding overrides via TOML, `$PAGER` / `$EDITOR` integration, shell completions, and man page generation.
-- [x] **Packaging & Distribution**: Multi-architecture static binaries, one-line installer script, and crates.io release (`fenestra-cli`).
+- [x] **Packaging & Distribution**: Multi-architecture static binaries, one-line installer script, and crates.io release (`cardea`).
 
 ---
 

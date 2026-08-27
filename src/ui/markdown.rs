@@ -419,8 +419,9 @@ mod tests {
     #[test]
     fn test_render_project_markdown_files() {
         let theme = Theme::from_name("ansi");
+        let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         for name in ["README.md", "PLAN.md", "CHANGELOG.md", "CONTRIBUTING.md"] {
-            let path = format!("/home/aredain/Projects/fenestra/{}", name);
+            let path = root.join(name);
             if let Ok(text) = std::fs::read_to_string(&path) {
                 let _lines = render_markdown(&text, &theme);
             }

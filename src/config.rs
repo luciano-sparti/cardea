@@ -348,7 +348,15 @@ pub struct Config {
 impl Config {
     pub fn config_path() -> Option<PathBuf> {
         let home = std::env::var("HOME").ok()?;
-        Some(Path::new(&home).join(".config/fenestra/config.toml"))
+        let cardea_path = Path::new(&home).join(".config/cardea/config.toml");
+        if cardea_path.exists() {
+            return Some(cardea_path);
+        }
+        let legacy_path = Path::new(&home).join(".config/fenestra/config.toml");
+        if legacy_path.exists() {
+            return Some(legacy_path);
+        }
+        Some(cardea_path)
     }
 
     pub fn load() -> Self {

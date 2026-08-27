@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Fenestra Installer Script
+# Cardea Installer Script
 # Works both as a remote one-liner (curl | bash) and as a local installer.
 # ==============================================================================
 set -euo pipefail
 
-REPO="Luciano-Sparti/fenestra"
-BIN_NAME="fenestra"
+REPO="Luciano-Sparti/cardea"
+BIN_NAME="cardea"
 
 # Determine target directory (system-wide if root, user-local otherwise)
 if [ "$(id -u)" -eq 0 ]; then
@@ -44,48 +44,48 @@ detect_arch() {
 
 # Determine if running from within an unpacked release directory
 is_local_dir() {
-    [ -f "./fenestra" ] && [ -d "./completions" ]
+    [ -f "./cardea" ] && [ -d "./completions" ]
 }
 
 install_files() {
     local src_dir="$1"
-    echo "==> Installing Fenestra to ${INSTALL_PREFIX}..."
+    echo "==> Installing Cardea to ${INSTALL_PREFIX}..."
 
     mkdir -p "$BIN_DIR" "$MAN_DIR" "$BASH_COMP_DIR" "$ZSH_COMP_DIR" "$FISH_COMP_DIR" "$APPS_DIR"
 
     # Install binary
-    install -m 755 "${src_dir}/fenestra" "${BIN_DIR}/fenestra"
+    install -m 755 "${src_dir}/cardea" "${BIN_DIR}/cardea"
 
     # Install man page
-    if [ -f "${src_dir}/man/fenestra.1" ]; then
-        install -m 644 "${src_dir}/man/fenestra.1" "${MAN_DIR}/fenestra.1"
-    elif [ -x "${src_dir}/fenestra" ]; then
-        "${src_dir}/fenestra" --generate-manpage > "${MAN_DIR}/fenestra.1" 2>/dev/null || true
+    if [ -f "${src_dir}/man/cardea.1" ]; then
+        install -m 644 "${src_dir}/man/cardea.1" "${MAN_DIR}/cardea.1"
+    elif [ -x "${src_dir}/cardea" ]; then
+        "${src_dir}/cardea" --generate-manpage > "${MAN_DIR}/cardea.1" 2>/dev/null || true
     fi
 
     # Install shell completions
     if [ -d "${src_dir}/completions" ]; then
-        [ -f "${src_dir}/completions/fenestra.bash" ] && install -m 644 "${src_dir}/completions/fenestra.bash" "${BASH_COMP_DIR}/fenestra"
-        [ -f "${src_dir}/completions/_fenestra" ] && install -m 644 "${src_dir}/completions/_fenestra" "${ZSH_COMP_DIR}/_fenestra"
-        [ -f "${src_dir}/completions/fenestra.fish" ] && install -m 644 "${src_dir}/completions/fenestra.fish" "${FISH_COMP_DIR}/fenestra.fish"
+        [ -f "${src_dir}/completions/cardea.bash" ] && install -m 644 "${src_dir}/completions/cardea.bash" "${BASH_COMP_DIR}/cardea"
+        [ -f "${src_dir}/completions/_cardea" ] && install -m 644 "${src_dir}/completions/_cardea" "${ZSH_COMP_DIR}/_cardea"
+        [ -f "${src_dir}/completions/cardea.fish" ] && install -m 644 "${src_dir}/completions/cardea.fish" "${FISH_COMP_DIR}/cardea.fish"
     else
-        "${src_dir}/fenestra" --generate-completions bash > "${BASH_COMP_DIR}/fenestra" 2>/dev/null || true
-        "${src_dir}/fenestra" --generate-completions zsh > "${ZSH_COMP_DIR}/_fenestra" 2>/dev/null || true
-        "${src_dir}/fenestra" --generate-completions fish > "${FISH_COMP_DIR}/fenestra.fish" 2>/dev/null || true
+        "${src_dir}/cardea" --generate-completions bash > "${BASH_COMP_DIR}/cardea" 2>/dev/null || true
+        "${src_dir}/cardea" --generate-completions zsh > "${ZSH_COMP_DIR}/_cardea" 2>/dev/null || true
+        "${src_dir}/cardea" --generate-completions fish > "${FISH_COMP_DIR}/cardea.fish" 2>/dev/null || true
     fi
 
     # Install desktop entry
-    if [ -f "${src_dir}/assets/fenestra.desktop" ]; then
-        install -m 644 "${src_dir}/assets/fenestra.desktop" "${APPS_DIR}/fenestra.desktop"
-    elif [ -f "./assets/fenestra.desktop" ]; then
-        install -m 644 "./assets/fenestra.desktop" "${APPS_DIR}/fenestra.desktop"
+    if [ -f "${src_dir}/assets/cardea.desktop" ]; then
+        install -m 644 "${src_dir}/assets/cardea.desktop" "${APPS_DIR}/cardea.desktop"
+    elif [ -f "./assets/cardea.desktop" ]; then
+        install -m 644 "./assets/cardea.desktop" "${APPS_DIR}/cardea.desktop"
     fi
 
     echo ""
-    echo "🎉 Fenestra installed successfully!"
-    echo "   Binary:      ${BIN_DIR}/fenestra"
-    echo "   Man Page:    ${MAN_DIR}/fenestra.1"
-    echo "   Desktop:     ${APPS_DIR}/fenestra.desktop"
+    echo "🎉 Cardea installed successfully!"
+    echo "   Binary:      ${BIN_DIR}/cardea"
+    echo "   Man Page:    ${MAN_DIR}/cardea.1"
+    echo "   Desktop:     ${APPS_DIR}/cardea.desktop"
     echo ""
     if ! echo "$PATH" | tr ':' '\n' | grep -qx "${BIN_DIR}"; then
         echo "⚠️  Note: ${BIN_DIR} is not in your PATH."
@@ -104,7 +104,7 @@ main() {
     local target
     target="$(detect_arch)"
 
-    echo "==> Fetching latest release of Fenestra for ${target}..."
+    echo "==> Fetching latest release of Cardea for ${target}..."
     local tmp_dir
     tmp_dir="$(mktemp -d)"
     trap 'rm -rf "$tmp_dir"' EXIT
@@ -115,13 +115,13 @@ main() {
         tag="v0.1.0"
     fi
 
-    local tarball="fenestra-${tag}-${target}.tar.gz"
+    local tarball="cardea-${tag}-${target}.tar.gz"
     local url="https://github.com/${REPO}/releases/download/${tag}/${tarball}"
 
     echo "==> Downloading ${url}..."
     if ! curl -sSL -f -o "${tmp_dir}/${tarball}" "$url"; then
         # Fallback to generic target name if versioned tarball name varies
-        tarball="fenestra-${target}.tar.gz"
+        tarball="cardea-${target}.tar.gz"
         url="https://github.com/${REPO}/releases/download/${tag}/${tarball}"
         curl -sSL -f -o "${tmp_dir}/${tarball}" "$url"
     fi
@@ -129,9 +129,9 @@ main() {
     echo "==> Extracting..."
     tar -xzf "${tmp_dir}/${tarball}" -C "$tmp_dir"
 
-    # Find the directory containing the fenestra binary
+    # Find the directory containing the cardea binary
     local extracted_dir
-    extracted_dir="$(find "$tmp_dir" -type f -name "fenestra" -exec dirname {} \; | head -1)"
+    extracted_dir="$(find "$tmp_dir" -type f -name "cardea" -exec dirname {} \; | head -1)"
 
     install_files "$extracted_dir"
 }

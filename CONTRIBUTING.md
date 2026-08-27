@@ -1,6 +1,6 @@
-# Contributing to Fenestra
+# Contributing to Cardea
 
-Thank you for your interest in contributing to **Fenestra**! Whether you are reporting a bug, improving documentation, submitting feature ideas, or writing code, your contributions are welcome.
+Thank you for your interest in contributing to **Cardea**! Whether you are reporting a bug, improving documentation, submitting feature ideas, or writing code, your contributions are welcome.
 
 ---
 
@@ -14,13 +14,13 @@ Thank you for your interest in contributing to **Fenestra**! Whether you are rep
 
 ```bash
 # Clone the repository
-git clone https://github.com/Luciano-Sparti/fenestra.git
-cd fenestra
+git clone https://github.com/Luciano-Sparti/cardea.git
+cd cardea
 
 # Build debug binary
 cargo build
 
-# Run Fenestra locally
+# Run Cardea locally
 cargo run -- .
 ```
 
@@ -46,7 +46,7 @@ cargo check --benches
 
 ### Headless UI Snapshot Tests
 
-Fenestra uses `ratatui::backend::TestBackend` and `insta` for deterministic headless UI snapshot testing without needing an active display server or X11/Wayland session. If you change UI rendering and intentionally update snapshots, review them carefully with `cargo insta review`.
+Cardea uses `ratatui::backend::TestBackend` and `insta` for deterministic headless UI snapshot testing without needing an active display server or X11/Wayland session. If you change UI rendering and intentionally update snapshots, review them carefully with `cargo insta review`.
 
 ---
 

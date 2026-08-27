@@ -1,8 +1,8 @@
-//! Property-style tests for Fenestra core functionality.
+//! Property-style tests for Cardea core functionality.
 //! These use fixed test values to exercise formatting and sorting logic,
 //! verifying correctness across a representative range of inputs.
 
-use fenestra::fs::{format_permissions, format_size};
+use cardea::fs::{format_permissions, format_size};
 
 /// Test that format_size produces valid output for a range of byte sizes.
 #[test]

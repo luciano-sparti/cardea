@@ -1,5 +1,5 @@
 use crossterm::event::KeyModifiers;
-use fenestra::config::{parse_key_str, ActionContext, Config, UserAction, CONFIG_VERSION};
+use cardea::config::{parse_key_str, ActionContext, Config, UserAction, CONFIG_VERSION};
 
 #[test]
 fn test_config_roundtrip_with_version_and_actions() {

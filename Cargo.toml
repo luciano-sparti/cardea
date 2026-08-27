@@ -1,14 +1,14 @@
 [package]
-name = "fenestra-cli"
-version = "1.0.2"
+name = "cardea"
+version = "1.0.0"
 edition = "2021"
 rust-version = "1.88"
-authors = ["Fenestra Contributors"]
+authors = ["Cardea Contributors"]
 description = "A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/Luciano-Sparti/fenestra"
-homepage = "https://github.com/Luciano-Sparti/fenestra"
+repository = "https://github.com/Luciano-Sparti/cardea"
+homepage = "https://github.com/Luciano-Sparti/cardea"
 keywords = ["tui", "file-manager", "ratatui", "explorer", "terminal"]
 categories = ["command-line-utilities", "filesystem"]
 include = [
@@ -21,15 +21,15 @@ include = [
 ]
 
 [lib]
-name = "fenestra"
+name = "cardea"
 path = "src/lib.rs"
 
 [[bin]]
-name = "fenestra"
+name = "cardea"
 path = "src/main.rs"
 
 [[bench]]
-name = "fenestra_benches"
+name = "cardea_benches"
 harness = false
 
 [dependencies]

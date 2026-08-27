@@ -1,6 +1,6 @@
 # ==============================================================================
-# Fenestra Configuration Reference
-# Default location: ~/.config/fenestra/config.toml
+# Cardea Configuration Reference
+# Default location: ~/.config/cardea/config.toml
 # ==============================================================================
 
 version = 1

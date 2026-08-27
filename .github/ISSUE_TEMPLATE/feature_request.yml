@@ -1,12 +1,12 @@
 name: ✨ Feature Request
-description: Suggest an idea, enhancement, or new integration for Fenestra
+description: Suggest an idea, enhancement, or new integration for Cardea
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting an improvement to Fenestra! Please describe the use case and proposed behavior.
+        Thanks for suggesting an improvement to Cardea! Please describe the use case and proposed behavior.
   - type: textarea
     id: problem
     attributes:

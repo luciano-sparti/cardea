@@ -1,6 +1,6 @@
-use fenestra::config::Config;
-use fenestra::fs::{FileEntry, FileKind};
-use fenestra::icons::{self, IconStyle};
+use cardea::config::Config;
+use cardea::fs::{FileEntry, FileKind};
+use cardea::icons::{self, IconStyle};
 
 fn entry(name: &str, kind: FileKind, is_dir: bool) -> FileEntry {
     let ext = std::path::Path::new(name)

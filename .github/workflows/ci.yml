@@ -88,30 +88,30 @@ jobs:
         uses: taiki-e/install-action@cross
 
       - name: Build binary for ${{ matrix.target }}
-        run: cross build --target ${{ matrix.target }} --release --bin fenestra
+        run: cross build --target ${{ matrix.target }} --release --bin cardea
 
       - name: Build host tools for asset generation
-        run: cargo build --release --bin fenestra
+        run: cargo build --release --bin cardea
 
       - name: Package release archive
         run: |
           mkdir -p staging/completions staging/man staging/assets
-          cp target/${{ matrix.target }}/release/fenestra staging/
+          cp target/${{ matrix.target }}/release/cardea staging/
           cp README.md LICENSE install.sh staging/
-          cp assets/fenestra.desktop staging/assets/
-          target/release/fenestra --generate-completions bash > staging/completions/fenestra.bash
-          target/release/fenestra --generate-completions zsh > staging/completions/_fenestra
-          target/release/fenestra --generate-completions fish > staging/completions/fenestra.fish
-          target/release/fenestra --generate-manpage > staging/man/fenestra.1
+          cp assets/cardea.desktop staging/assets/
+          target/release/cardea --generate-completions bash > staging/completions/cardea.bash
+          target/release/cardea --generate-completions zsh > staging/completions/_cardea
+          target/release/cardea --generate-completions fish > staging/completions/cardea.fish
+          target/release/cardea --generate-manpage > staging/man/cardea.1
           cd staging
-          tar -czvf ../fenestra-${{ matrix.target }}.tar.gz *
+          tar -czvf ../cardea-${{ matrix.target }}.tar.gz *
           cd ..
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fenestra-${{ matrix.target }}
-          path: fenestra-${{ matrix.target }}.tar.gz
+          name: cardea-${{ matrix.target }}
+          path: cardea-${{ matrix.target }}.tar.gz
 
   release:
     needs: build-binaries
@@ -132,14 +132,14 @@ jobs:
       - name: Generate SHA256 checksums
         run: |
           cd release-artifacts
-          sha256sum fenestra-*.tar.gz > SHA256SUMS
+          sha256sum cardea-*.tar.gz > SHA256SUMS
           cat SHA256SUMS
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release-artifacts/fenestra-*.tar.gz
+            release-artifacts/cardea-*.tar.gz
             release-artifacts/SHA256SUMS
           generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}

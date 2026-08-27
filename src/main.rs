@@ -7,17 +7,17 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use fenestra::app::App;
-use fenestra::config::Config;
-use fenestra::event::{AppEvent, EventHandler};
-use fenestra::theme::watcher::ThemeWatcher;
-use fenestra::theme::Theme;
-use fenestra::ui;
+use cardea::app::App;
+use cardea::config::Config;
+use cardea::event::{AppEvent, EventHandler};
+use cardea::theme::watcher::ThemeWatcher;
+use cardea::theme::Theme;
+use cardea::ui;
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 
 #[derive(Parser, Debug)]
-#[command(name = "fenestra", author, version, about = "A desktop-style terminal file explorer", long_about = None)]
+#[command(name = "cardea", author, version, about = "A desktop-style terminal file explorer", long_about = None)]
 struct Cli {
     /// Initial path to open
     #[arg(value_name = "PATH")]
@@ -61,14 +61,14 @@ fn init_logging() {
     let Ok(home) = std::env::var("HOME") else {
         return;
     };
-    let log_dir = PathBuf::from(home).join(".local/state/fenestra");
+    let log_dir = PathBuf::from(home).join(".local/state/cardea");
     if std::fs::create_dir_all(&log_dir).is_err() {
         return;
     }
     let log_file = match std::fs::OpenOptions::new()
         .create(true)
         .append(true)
-        .open(log_dir.join("fenestra.log"))
+        .open(log_dir.join("cardea.log"))
     {
         Ok(f) => f,
         Err(_) => return,
@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(shell) = cli.generate_completions {
         let mut cmd = Cli::command();
-        clap_complete::generate(shell, &mut cmd, "fenestra", &mut std::io::stdout());
+        clap_complete::generate(shell, &mut cmd, "cardea", &mut std::io::stdout());
         return Ok(());
     }
 
@@ -233,7 +233,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     dest,
                     cancelled,
                 } => {
-                    app.on_ops_finished(fenestra::app::OpsOutcome::from_event(
+                    app.on_ops_finished(cardea::app::OpsOutcome::from_event(
                         job_id, label, succeeded, skipped, errors, dest, cancelled,
                     ));
                 }

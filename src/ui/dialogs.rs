@@ -230,7 +230,7 @@ pub fn render_help_modal(f: &mut Frame, app: &App, theme: &Theme) {
     f.render_widget(Clear, area);
 
     let block = Block::default()
-        .title(" 󰞋 Fenestra — Keyboard & Mouse Shortcuts ")
+        .title(" 󰞋 Cardea — Keyboard & Mouse Shortcuts ")
         .borders(Borders::ALL)
         .border_style(
             Style::default()
@@ -642,7 +642,7 @@ pub fn render_help_modal(f: &mut Frame, app: &App, theme: &Theme) {
                 "   q / Ctrl+C        ",
                 Style::default().fg(theme.status_key),
             ),
-            Span::styled("Quit Fenestra", Style::default().fg(theme.fg)),
+            Span::styled("Quit Cardea", Style::default().fg(theme.fg)),
         ]),
         Line::from(""),
         Line::from(vec![Span::styled(

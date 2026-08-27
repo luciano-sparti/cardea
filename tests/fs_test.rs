@@ -1,5 +1,5 @@
-use fenestra::config::{Config, SortColumn, SortDirection};
-use fenestra::fs::{format_permissions, format_size, sort_entries, FileEntry, FileKind};
+use cardea::config::{Config, SortColumn, SortDirection};
+use cardea::fs::{format_permissions, format_size, sort_entries, FileEntry, FileKind};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;

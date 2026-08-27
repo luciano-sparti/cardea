@@ -1,5 +1,5 @@
-use fenestra::config::{Config, CustomTheme};
-use fenestra::theme::{parse_hex_color, Theme};
+use cardea::config::{Config, CustomTheme};
+use cardea::theme::{parse_hex_color, Theme};
 use ratatui::style::Color;
 use std::collections::HashMap;
 
@@ -189,7 +189,7 @@ fn test_nearest_ansi_mapping() {
 
 #[test]
 fn test_truecolor_detection() {
-    use fenestra::theme::Theme as T;
+    use cardea::theme::Theme as T;
     assert!(T::supports_truecolor(
         Some("truecolor"),
         Some("xterm-256color")
@@ -319,7 +319,7 @@ blue = "#1010aa"
 magenta = "#c4d8e2"
 brown = "#7a5e56"
 "##;
-    let t = fenestra::theme::parse_omarchy_v4("aether", content).expect("valid v4 file");
+    let t = cardea::theme::parse_omarchy_v4("aether", content).expect("valid v4 file");
 
     assert_eq!(t.name, "Omarchy: aether");
     assert_eq!(t.bg, Color::Rgb(12, 11, 12));
@@ -362,7 +362,7 @@ fn test_parse_omarchy_v4_partial_and_invalid() {
 background = "#111111"
 foreground = "#eeeeee"
 "##;
-    let t = fenestra::theme::parse_omarchy_v4("minimal", minimal)
+    let t = cardea::theme::parse_omarchy_v4("minimal", minimal)
         .expect("partial file still yields a theme");
     assert_eq!(t.bg, Color::Rgb(17, 17, 17));
     assert_eq!(t.fg, Color::Rgb(238, 238, 238));
@@ -374,6 +374,6 @@ foreground = "#eeeeee"
 
     // Invalid TOML or a table with no recognizable color keys → None,
     // so the caller keeps the last valid palette
-    assert!(fenestra::theme::parse_omarchy_v4("x", "not [ valid {{{").is_none());
-    assert!(fenestra::theme::parse_omarchy_v4("x", "[meta]\nmode = \"dark\"\n").is_none());
+    assert!(cardea::theme::parse_omarchy_v4("x", "not [ valid {{{").is_none());
+    assert!(cardea::theme::parse_omarchy_v4("x", "[meta]\nmode = \"dark\"\n").is_none());
 }

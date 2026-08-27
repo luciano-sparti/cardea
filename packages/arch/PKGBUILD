@@ -1,14 +1,14 @@
-# Maintainer: Luciano Sparti <https://github.com/Luciano-Sparti/fenestra>
-pkgname=fenestra
+# Maintainer: Luciano Sparti <https://github.com/Luciano-Sparti/cardea>
+pkgname=cardea
 pkgver=1.0.0
 pkgrel=1
 pkgdesc="A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics"
 arch=('x86_64' 'aarch64')
-url="https://github.com/Luciano-Sparti/fenestra"
+url="https://github.com/Luciano-Sparti/cardea"
 license=('MIT')
 depends=('gcc-libs')
 makedepends=('cargo' 'rust')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/Luciano-Sparti/fenestra/archive/refs/tags/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Luciano-Sparti/cardea/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {
@@ -23,14 +23,14 @@ check() {
 
 package() {
     cd "$pkgname-$pkgver"
-    install -Dm755 "target/release/fenestra" "$pkgdir/usr/bin/fenestra"
+    install -Dm755 "target/release/cardea" "$pkgdir/usr/bin/cardea"
     install -Dm644 "LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
     install -Dm644 "README.md" "$pkgdir/usr/share/doc/$pkgname/README.md"
-    install -Dm644 "assets/fenestra.desktop" "$pkgdir/usr/share/applications/fenestra.desktop"
+    install -Dm644 "assets/cardea.desktop" "$pkgdir/usr/share/applications/cardea.desktop"
 
     # Generate completions and man page from binary
-    "$pkgdir/usr/bin/fenestra" --generate-completions bash | install -Dm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/fenestra"
-    "$pkgdir/usr/bin/fenestra" --generate-completions zsh | install -Dm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_fenestra"
-    "$pkgdir/usr/bin/fenestra" --generate-completions fish | install -Dm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/fenestra.fish"
-    "$pkgdir/usr/bin/fenestra" --generate-manpage | install -Dm644 /dev/stdin "$pkgdir/usr/share/man/man1/fenestra.1"
+    "$pkgdir/usr/bin/cardea" --generate-completions bash | install -Dm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/cardea"
+    "$pkgdir/usr/bin/cardea" --generate-completions zsh | install -Dm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_cardea"
+    "$pkgdir/usr/bin/cardea" --generate-completions fish | install -Dm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/cardea.fish"
+    "$pkgdir/usr/bin/cardea" --generate-manpage | install -Dm644 /dev/stdin "$pkgdir/usr/share/man/man1/cardea.1"
 }

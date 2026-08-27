@@ -2,22 +2,22 @@
 set -euo pipefail
 
 # ==============================================================================
-# Fenestra Release Packaging Script
+# Cardea Release Packaging Script
 # Generates release tarballs, man pages, shell completions, and .deb packages
 # ==============================================================================
 
 VERSION=$(grep '^version = ' Cargo.toml | head -1 | cut -d '"' -f 2)
 TARGET="${1:-x86_64-unknown-linux-gnu}"
 DIST_DIR="dist"
-STAGING_DIR="dist/fenestra-v${VERSION}-${TARGET}"
+STAGING_DIR="dist/cardea-v${VERSION}-${TARGET}"
 
-echo "==> Building Fenestra v${VERSION} for target: ${TARGET}..."
+echo "==> Building Cardea v${VERSION} for target: ${TARGET}..."
 if [ "$TARGET" = "$(rustc -vV | grep 'host:' | cut -d ' ' -f 2)" ]; then
-    cargo build --release --bin fenestra
-    BIN_PATH="target/release/fenestra"
+    cargo build --release --bin cardea
+    BIN_PATH="target/release/cardea"
 else
-    cross build --release --target "$TARGET" --bin fenestra
-    BIN_PATH="target/${TARGET}/release/fenestra"
+    cross build --release --target "$TARGET" --bin cardea
+    BIN_PATH="target/${TARGET}/release/cardea"
 fi
 
 echo "==> Preparing staging directory: ${STAGING_DIR}..."
@@ -27,21 +27,21 @@ mkdir -p "${STAGING_DIR}/completions" "${STAGING_DIR}/man" "${STAGING_DIR}/asset
 # Copy binary & core docs
 cp "$BIN_PATH" "${STAGING_DIR}/"
 cp README.md LICENSE "${STAGING_DIR}/"
-cp assets/fenestra.desktop "${STAGING_DIR}/assets/"
+cp assets/cardea.desktop "${STAGING_DIR}/assets/"
 
 # Generate shell completions and man page using the compiled host binary
-HOST_BIN="target/release/fenestra"
+HOST_BIN="target/release/cardea"
 if [ ! -f "$HOST_BIN" ]; then
-    cargo build --release --bin fenestra
+    cargo build --release --bin cardea
 fi
 
 echo "==> Generating shell completions..."
-"$HOST_BIN" --generate-completions bash > "${STAGING_DIR}/completions/fenestra.bash"
-"$HOST_BIN" --generate-completions zsh > "${STAGING_DIR}/completions/_fenestra"
-"$HOST_BIN" --generate-completions fish > "${STAGING_DIR}/completions/fenestra.fish"
+"$HOST_BIN" --generate-completions bash > "${STAGING_DIR}/completions/cardea.bash"
+"$HOST_BIN" --generate-completions zsh > "${STAGING_DIR}/completions/_cardea"
+"$HOST_BIN" --generate-completions fish > "${STAGING_DIR}/completions/cardea.fish"
 
 echo "==> Generating man page..."
-"$HOST_BIN" --generate-manpage > "${STAGING_DIR}/man/fenestra.1"
+"$HOST_BIN" --generate-manpage > "${STAGING_DIR}/man/cardea.1"
 
 # Copy install script into archive
 cp install.sh "${STAGING_DIR}/install.sh"
@@ -49,9 +49,9 @@ chmod +x "${STAGING_DIR}/install.sh"
 
 echo "==> Creating release archive..."
 mkdir -p "$DIST_DIR"
-tar -czvf "${DIST_DIR}/fenestra-v${VERSION}-${TARGET}.tar.gz" -C "$DIST_DIR" "fenestra-v${VERSION}-${TARGET}"
+tar -czvf "${DIST_DIR}/cardea-v${VERSION}-${TARGET}.tar.gz" -C "$DIST_DIR" "cardea-v${VERSION}-${TARGET}"
 
 # Generate SHA256 checksum
-(cd "$DIST_DIR" && sha256sum "fenestra-v${VERSION}-${TARGET}.tar.gz" > "fenestra-v${VERSION}-${TARGET}.tar.gz.sha256")
+(cd "$DIST_DIR" && sha256sum "cardea-v${VERSION}-${TARGET}.tar.gz" > "cardea-v${VERSION}-${TARGET}.tar.gz.sha256")
 
-echo "==> Successfully packaged: ${DIST_DIR}/fenestra-v${VERSION}-${TARGET}.tar.gz"
+echo "==> Successfully packaged: ${DIST_DIR}/cardea-v${VERSION}-${TARGET}.tar.gz"

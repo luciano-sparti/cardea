@@ -207,6 +207,45 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "cardea"
+version = "1.0.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "clap_complete",
+ "clap_mangen",
+ "compact_str 0.9.1",
+ "criterion",
+ "crossterm",
+ "flate2",
+ "futures",
+ "image",
+ "insta",
+ "libc",
+ "lscolors",
+ "mime_guess",
+ "natord",
+ "notify",
+ "open",
+ "proptest",
+ "ratatui",
+ "ratatui-image",
+ "serde",
+ "sevenz-rust",
+ "sha2",
+ "syntect",
+ "tar",
+ "tempfile",
+ "tokio",
+ "toml",
+ "tracing",
+ "tracing-subscriber",
+ "trash",
+ "xz2",
+ "zip",
+]
+
+[[package]]
 name = "cassowary"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -645,45 +684,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e6853b52649d4ac5c0bd02320cddc5ba956bdb407c4b75a2c6b75bf51500f8c"
 dependencies = [
  "simd-adler32",
-]
-
-[[package]]
-name = "fenestra-cli"
-version = "1.0.2"
-dependencies = [
- "chrono",
- "clap",
- "clap_complete",
- "clap_mangen",
- "compact_str 0.9.1",
- "criterion",
- "crossterm",
- "flate2",
- "futures",
- "image",
- "insta",
- "libc",
- "lscolors",
- "mime_guess",
- "natord",
- "notify",
- "open",
- "proptest",
- "ratatui",
- "ratatui-image",
- "serde",
- "sevenz-rust",
- "sha2",
- "syntect",
- "tar",
- "tempfile",
- "tokio",
- "toml",
- "tracing",
- "tracing-subscriber",
- "trash",
- "xz2",
- "zip",
 ]
 
 [[package]]

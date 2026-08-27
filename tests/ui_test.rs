@@ -1,9 +1,9 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use fenestra::app::{App, ButtonKind, Focus};
-use fenestra::config::{Config, SortColumn, SortDirection};
-use fenestra::event::AppEvent;
-use fenestra::theme::Theme;
-use fenestra::ui;
+use cardea::app::{App, ButtonKind, Focus};
+use cardea::config::{Config, SortColumn, SortDirection};
+use cardea::event::AppEvent;
+use cardea::theme::Theme;
+use cardea::ui;
 use ratatui::backend::TestBackend;
 use ratatui::Terminal;
 use std::path::PathBuf;
@@ -29,7 +29,7 @@ async fn test_headless_ui_rendering() {
 
 #[tokio::test]
 async fn test_job_queue_toggle_render_and_cancel() {
-    let base = std::env::temp_dir().join(format!("fenestra_jq_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_jq_{}", std::process::id()));
     let src = base.join("src");
     let dst = base.join("dst");
     std::fs::create_dir_all(&src).unwrap();
@@ -106,7 +106,7 @@ async fn test_job_queue_toggle_render_and_cancel() {
 
 #[tokio::test]
 async fn test_sidebar_and_breadcrumb_context_menus() {
-    let base = std::env::temp_dir().join(format!("fenestra_sbcm_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_sbcm_{}", std::process::id()));
     let sub = base.join("subfolder");
     std::fs::create_dir_all(&sub).unwrap();
     std::fs::write(base.join("note.txt"), "hi").unwrap();
@@ -154,7 +154,7 @@ async fn test_sidebar_and_breadcrumb_context_menus() {
     // --- Targeted copy + paste into a folder target ---
     let note = base.join("note.txt");
     app.open_context_menu_for_path(note.clone(), 10, 10);
-    app.execute_context_action(fenestra::app::ContextAction::Copy);
+    app.execute_context_action(cardea::app::ContextAction::Copy);
     assert!(
         app.clipboard
             .as_ref()
@@ -175,7 +175,7 @@ async fn test_sidebar_and_breadcrumb_context_menus() {
         labels.iter().any(|l| l.contains("Paste Into Folder")),
         "dir menu relabels paste"
     );
-    app.execute_context_action(fenestra::app::ContextAction::Paste);
+    app.execute_context_action(cardea::app::ContextAction::Paste);
     assert!(!app.active_ops.is_empty(), "paste into folder submitted");
     for _ in 0..200 {
         pump_events(&mut app, &mut rx).await;
@@ -192,7 +192,7 @@ async fn test_sidebar_and_breadcrumb_context_menus() {
 
     // --- Targeted rename via the menu action ---
     app.open_context_menu_for_path(note.clone(), 10, 10);
-    app.execute_context_action(fenestra::app::ContextAction::Rename);
+    app.execute_context_action(cardea::app::ContextAction::Rename);
     let dlg = app.dialog.as_ref().expect("rename prompt opens");
     assert!(
         dlg.prompt.as_ref().is_some_and(|p| p.buffer == "note.txt"),
@@ -217,7 +217,7 @@ async fn test_sidebar_and_breadcrumb_context_menus() {
 
 #[tokio::test]
 async fn test_syntax_highlighted_preview() {
-    let base = std::env::temp_dir().join(format!("fenestra_syn_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_syn_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(
         base.join("main.rs"),
@@ -301,7 +301,7 @@ async fn test_syntax_highlighted_preview() {
 
 #[tokio::test]
 async fn test_image_preview_protocol() {
-    let base = std::env::temp_dir().join(format!("fenestra_img_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_img_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
 
     // Generate a small gradient PNG
@@ -403,7 +403,7 @@ async fn test_image_preview_protocol() {
 
 #[tokio::test]
 async fn test_archive_preview_listing() {
-    let base = std::env::temp_dir().join(format!("fenestra_arc_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_arc_{}", std::process::id()));
     let payload = base.join("payload");
     std::fs::create_dir_all(&payload).unwrap();
     std::fs::write(payload.join("alpha.txt"), "alpha contents").unwrap();
@@ -527,7 +527,7 @@ async fn test_archive_preview_listing() {
 
 #[tokio::test]
 async fn test_binary_hex_dump_preview() {
-    let base = std::env::temp_dir().join(format!("fenestra_hex_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_hex_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
 
     // A genuinely binary file: full byte range, invalid as UTF-8
@@ -610,7 +610,7 @@ async fn test_binary_hex_dump_preview() {
 
 #[tokio::test]
 async fn test_preview_metadata_mime_and_sha256() {
-    let base = std::env::temp_dir().join(format!("fenestra_meta_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_meta_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("hello.txt"), "hello world").unwrap();
     std::fs::write(base.join("mystery.xyzunknown"), "data").unwrap();
@@ -679,7 +679,7 @@ async fn test_preview_metadata_mime_and_sha256() {
 
 #[tokio::test]
 async fn test_pager_and_modifier_hint() {
-    let base = std::env::temp_dir().join(format!("fenestra_pgr_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_pgr_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("doc.txt"), "readable content\n").unwrap();
 
@@ -831,7 +831,7 @@ async fn test_app_state_navigation_and_shortcuts() {
 
 #[tokio::test]
 async fn test_dialog_cancel_flow() {
-    let base = std::env::temp_dir().join(format!("fenestra_cancel_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_cancel_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("keep_me.txt"), "z").unwrap();
 
@@ -923,7 +923,7 @@ async fn pump_events(app: &mut App, rx: &mut tokio::sync::mpsc::UnboundedReceive
                 errors,
                 dest,
                 cancelled,
-            } => app.on_ops_finished(fenestra::app::OpsOutcome::from_event(
+            } => app.on_ops_finished(cardea::app::OpsOutcome::from_event(
                 job_id, label, succeeded, skipped, errors, dest, cancelled,
             )),
             _ => {}
@@ -933,7 +933,7 @@ async fn pump_events(app: &mut App, rx: &mut tokio::sync::mpsc::UnboundedReceive
 
 #[tokio::test]
 async fn test_dialog_permanent_delete_confirm() {
-    let base = std::env::temp_dir().join(format!("fenestra_test_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_test_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     let victim_a = base.join("doomed_a.txt");
     let victim_b = base.join("doomed_b.txt");
@@ -998,7 +998,7 @@ async fn test_dialog_permanent_delete_confirm() {
 
 #[tokio::test]
 async fn test_range_and_invert_selection() {
-    let base = std::env::temp_dir().join(format!("fenestra_sel_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_sel_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     for name in ["a.txt", "b.txt", "c.txt", "d.txt"] {
         std::fs::write(base.join(name), "z").unwrap();
@@ -1054,7 +1054,7 @@ async fn test_range_and_invert_selection() {
 
 #[tokio::test]
 async fn test_rename_prompt_flow() {
-    let base = std::env::temp_dir().join(format!("fenestra_ren_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_ren_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     let original = base.join("old_name.txt");
     std::fs::write(&original, "z").unwrap();
@@ -1124,7 +1124,7 @@ async fn test_rename_prompt_flow() {
 
 #[tokio::test]
 async fn test_copy_paste_via_worker() {
-    let base = std::env::temp_dir().join(format!("fenestra_cpy_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_cpy_{}", std::process::id()));
     let src_dir = base.join("src");
     let dst_dir = base.join("dst");
     std::fs::create_dir_all(&src_dir).unwrap();
@@ -1179,7 +1179,7 @@ async fn test_copy_paste_via_worker() {
 
 #[tokio::test]
 async fn test_context_menu_keyboard_flow() {
-    let base = std::env::temp_dir().join(format!("fenestra_ctx_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_ctx_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("target.txt"), "z").unwrap();
 
@@ -1254,7 +1254,7 @@ async fn test_context_menu_keyboard_flow() {
 async fn test_context_menu_right_click_flow() {
     use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 
-    let base = std::env::temp_dir().join(format!("fenestra_ctxr_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_ctxr_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("row_file.txt"), "z").unwrap();
 
@@ -1311,7 +1311,7 @@ async fn test_context_menu_right_click_flow() {
 async fn test_drag_and_drop_to_breadcrumb() {
     use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 
-    let outer = std::env::temp_dir().join(format!("fenestra_dd_{}", std::process::id()));
+    let outer = std::env::temp_dir().join(format!("cardea_dd_{}", std::process::id()));
     let base = outer.join("base");
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("portable.txt"), "payload").unwrap();
@@ -1411,7 +1411,7 @@ async fn test_drag_and_drop_to_breadcrumb() {
 async fn test_drag_no_op_and_cancel() {
     use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 
-    let base = std::env::temp_dir().join(format!("fenestra_ddn_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_ddn_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("stay.txt"), "z").unwrap();
 
@@ -1468,7 +1468,7 @@ async fn test_drag_no_op_and_cancel() {
 
 #[tokio::test]
 async fn test_tab_lifecycle_and_isolation() {
-    let base = std::env::temp_dir().join(format!("fenestra_tabs_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_tabs_{}", std::process::id()));
     let sub_a = base.join("alpha");
     let sub_b = base.join("beta");
     std::fs::create_dir_all(&sub_a).unwrap();
@@ -1545,7 +1545,7 @@ async fn test_tab_lifecycle_and_isolation() {
 async fn test_tab_bar_rendering_and_click_switch() {
     use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 
-    let base = std::env::temp_dir().join(format!("fenestra_tabbar_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_tabbar_{}", std::process::id()));
     let sub = base.join("child");
     std::fs::create_dir_all(&sub).unwrap();
 
@@ -1588,7 +1588,7 @@ async fn test_tab_bar_rendering_and_click_switch() {
 async fn test_dual_pane_toggle_swap_and_click_focus() {
     use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 
-    let base = std::env::temp_dir().join(format!("fenestra_dp_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_dp_{}", std::process::id()));
     let left_dir = base.join("left");
     let right_dir = base.join("right");
     std::fs::create_dir_all(&left_dir).unwrap();
@@ -1646,7 +1646,7 @@ async fn test_dual_pane_toggle_swap_and_click_focus() {
 
 #[tokio::test]
 async fn test_dual_pane_f5_f6_cross_pane_transfer() {
-    let base = std::env::temp_dir().join(format!("fenestra_dp56_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_dp56_{}", std::process::id()));
     let left_dir = base.join("left");
     let right_dir = base.join("right");
     std::fs::create_dir_all(&left_dir).unwrap();
@@ -1732,7 +1732,7 @@ async fn copy_src_paste_dst(
 
 #[tokio::test]
 async fn test_transfer_conflict_dialog_resolutions() {
-    let base = std::env::temp_dir().join(format!("fenestra_conf_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_conf_{}", std::process::id()));
     let src_dir = base.join("src");
     let dst_dir = base.join("dst");
     std::fs::create_dir_all(&src_dir).unwrap();
@@ -1843,7 +1843,7 @@ async fn test_transfer_conflict_dialog_resolutions() {
 
 #[tokio::test]
 async fn test_ops_failure_opens_retry_dialog() {
-    let base = std::env::temp_dir().join(format!("fenestra_retry_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_retry_{}", std::process::id()));
     let src_dir = base.join("src");
     let dst_dir = base.join("dst");
     std::fs::create_dir_all(&src_dir).unwrap();
@@ -1856,7 +1856,7 @@ async fn test_ops_failure_opens_retry_dialog() {
     let mut app = App::new(Some(src_dir.clone()), &config, tx);
 
     // Simulate a batch where one item failed mid-transfer
-    app.on_ops_finished(fenestra::app::OpsOutcome::from_event(
+    app.on_ops_finished(cardea::app::OpsOutcome::from_event(
         42,
         "Copied".to_string(),
         2,
@@ -1873,7 +1873,7 @@ async fn test_ops_failure_opens_retry_dialog() {
         .expect("failures should open retry dialog");
     assert!(matches!(
         dlg.action,
-        fenestra::app::DialogAction::RetryTransfer { .. }
+        cardea::app::DialogAction::RetryTransfer { .. }
     ));
     assert!(matches!(
         dlg.buttons[dlg.selected_button].kind,
@@ -1904,7 +1904,7 @@ async fn test_ops_failure_opens_retry_dialog() {
 
 #[tokio::test]
 async fn test_create_folder_via_context_menu_and_file_via_keys() {
-    let base = std::env::temp_dir().join(format!("fenestra_new_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_new_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("seed.txt"), "z").unwrap();
 
@@ -1939,7 +1939,7 @@ async fn test_create_folder_via_context_menu_and_file_via_keys() {
     let dlg = app.dialog.as_ref().expect("New Folder opens a prompt");
     assert!(matches!(
         dlg.action,
-        fenestra::app::DialogAction::CreateFolder(_)
+        cardea::app::DialogAction::CreateFolder(_)
     ));
     for c in "fresh_dir".chars() {
         app.handle_key_event(KeyEvent::new(KeyCode::Char(c), KeyModifiers::NONE));
@@ -1971,7 +1971,7 @@ async fn test_create_folder_via_context_menu_and_file_via_keys() {
         .expect("Ctrl+Shift+N opens new-file prompt");
     assert!(matches!(
         dlg.action,
-        fenestra::app::DialogAction::CreateFile(_)
+        cardea::app::DialogAction::CreateFile(_)
     ));
     for c in "notes.txt".chars() {
         app.handle_key_event(KeyEvent::new(KeyCode::Char(c), KeyModifiers::NONE));
@@ -2000,9 +2000,9 @@ async fn test_create_folder_via_context_menu_and_file_via_keys() {
 
 #[tokio::test]
 async fn test_user_action_executes_via_key_and_context_menu() {
-    use fenestra::config::UserAction;
+    use cardea::config::UserAction;
 
-    let base = std::env::temp_dir().join(format!("fenestra_act_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_act_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("input.txt"), "payload").unwrap();
 
@@ -2083,7 +2083,7 @@ async fn test_user_action_executes_via_key_and_context_menu() {
 
 #[tokio::test]
 async fn test_open_terminal_and_editor_paths() {
-    let base = std::env::temp_dir().join(format!("fenestra_dti_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("cardea_dti_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
     std::fs::write(base.join("doc.txt"), "hello").unwrap();
 
