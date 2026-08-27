@@ -18,6 +18,12 @@
 [![Built with Ratatui](https://img.shields.io/badge/TUI-Ratatui%200.29-green.svg)](https://ratatui.rs)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux)](https://kernel.org)
 
+<br/>
+
+![Cardea Terminal File Manager](assets/screenshot.png)
+
+<br/>
+
 [Features](#-features) • [Why Cardea](#-why-cardea) • [Installation](#-installation) • [Keybindings](#-keybindings) • [Configuration](#-configuration) • [Technical Architecture](#-technical-architecture)
 
 </div>
