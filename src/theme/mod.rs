@@ -596,14 +596,18 @@ impl Theme {
 
     /// Applies environment-based degradation to any palette: `$NO_COLOR`
     /// strips all color; non-truecolor terminals get nearest-ANSI mapping.
-    pub fn effective(base: Theme, no_color: bool) -> Theme {
+    pub fn effective_with_terminal(base: Theme, no_color: bool, truecolor: bool) -> Theme {
         if no_color {
             base.stripped()
-        } else if !Self::truecolor_detected() {
+        } else if !truecolor {
             base.degraded_to_ansi()
         } else {
             base
         }
+    }
+
+    pub fn effective(base: Theme, no_color: bool) -> Theme {
+        Self::effective_with_terminal(base, no_color, Self::truecolor_detected())
     }
 
     /// Removes all custom coloring (every field becomes `Color::Reset`).

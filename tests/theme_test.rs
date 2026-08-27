@@ -101,14 +101,17 @@ fn stripped_field(theme: &Theme, idx: usize) -> Color {
 #[test]
 fn test_effective_applies_no_color() {
     let base = Theme::nord();
-    let effective = Theme::effective(base, true);
+    let effective = Theme::effective_with_terminal(base.clone(), true, true);
     assert_eq!(effective.fg, Color::Reset);
     assert_eq!(effective.accent, Color::Reset);
 
-    // Without NO_COLOR the palette passes through untouched
-    let base = Theme::nord();
-    let effective = Theme::effective(base, false);
+    // With truecolor and no NO_COLOR the palette passes through untouched
+    let effective = Theme::effective_with_terminal(base.clone(), false, true);
     assert_eq!(effective, Theme::nord());
+
+    // Without truecolor it degrades to ANSI
+    let effective = Theme::effective_with_terminal(base, false, false);
+    assert_eq!(effective, Theme::nord().degraded_to_ansi());
 }
 
 // ---- ANSI Degradation ----
