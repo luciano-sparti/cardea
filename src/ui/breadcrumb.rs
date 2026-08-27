@@ -73,7 +73,7 @@ pub fn render_breadcrumb(f: &mut Frame, app: &mut App, area: Rect, theme: &Theme
 
         let (seg_name, seg_icon) = match comp {
             Component::RootDir => (
-                "/".to_string(),
+                String::new(),
                 crate::icons::breadcrumb_icon(true, false, app.icon_style),
             ),
             Component::Normal(os_str) => {
@@ -94,7 +94,11 @@ pub fn render_breadcrumb(f: &mut Frame, app: &mut App, area: Rect, theme: &Theme
         current_accum.push(comp);
         let segment_path = current_accum.clone();
 
-        let chip_text = format!(" {}{} ", seg_icon, seg_name);
+        let chip_text = if seg_name.is_empty() {
+            format!(" {} ", seg_icon)
+        } else {
+            format!(" {} {} ", seg_icon, seg_name)
+        };
         let chip_len = chip_text.chars().count() as u16;
 
         let chip_style = if is_last {

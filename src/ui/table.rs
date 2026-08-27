@@ -230,7 +230,6 @@ pub fn render_table(
                 tab.table_scroll_offset + rel_idx == tab.table_selected_index && focused;
             let is_multi_checked = tab.multi_selected.contains(&entry.path);
 
-            let check_icon = crate::icons::checked_box_icon(cfg.icon_style);
             let icon_str = crate::icons::file_icon(entry, cfg.icon_style);
 
             let icon_color = match entry.kind {
@@ -286,8 +285,24 @@ pub fn render_table(
                 theme_name_style
             };
 
+            let check_cell = if tab.multi_selected.is_empty() {
+                Cell::from("  ")
+            } else if is_multi_checked {
+                Cell::from(Span::styled(
+                    crate::icons::checked_box_icon(cfg.icon_style),
+                    Style::default().fg(theme.accent),
+                ))
+            } else {
+                Cell::from(Span::styled(
+                    crate::icons::unchecked_box_icon(cfg.icon_style),
+                    Style::default()
+                        .fg(theme.status_fg)
+                        .add_modifier(Modifier::DIM),
+                ))
+            };
+
             let row_cells = vec![
-                Cell::from(Span::styled(check_icon, Style::default().fg(theme.accent))),
+                check_cell,
                 Cell::from(Span::styled(icon_str, Style::default().fg(icon_color))),
                 Cell::from(Span::styled(entry.name.as_str(), name_style)),
                 Cell::from(Span::styled(

@@ -119,6 +119,15 @@ pub fn checked_box_icon(style: IconStyle) -> &'static str {
     }
 }
 
+/// Unchecked box glyph for multi-selection rows.
+pub fn unchecked_box_icon(style: IconStyle) -> &'static str {
+    match style {
+        IconStyle::Nerd => "\u{f096}",
+        IconStyle::Unicode => "\u{25a2}",
+        IconStyle::Ascii => " ",
+    }
+}
+
 /// Unicode fallback glyphs by category.
 fn uni_glyph(category: UniCat, is_hidden: bool) -> &'static str {
     match category {
