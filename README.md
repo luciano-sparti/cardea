@@ -13,7 +13,7 @@
 
 [![CI](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Rust: 1.78+](https://img.shields.io/badge/Rust-1.78%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
+[![Rust: 1.85+](https://img.shields.io/badge/Rust-1.85%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![Built with Ratatui](https://img.shields.io/badge/TUI-Ratatui%200.29-green.svg)](https://ratatui.rs)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux)](https://kernel.org)
 
