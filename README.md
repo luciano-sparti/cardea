@@ -11,6 +11,7 @@
 
 ### A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics.
 
+[![Crates.io](https://img.shields.io/crates/v/fenestra-cli.svg?logo=rust)](https://crates.io/crates/fenestra-cli)
 [![CI](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust: 1.88+](https://img.shields.io/badge/Rust-1.88%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
@@ -264,7 +265,7 @@ flowchart TD
 
 | Component | Library / Tool | Purpose |
 | :--- | :--- | :--- |
-| **Language** | [Rust 1.78+](https://www.rust-lang.org/) | Safety, zero-cost abstractions, memory performance |
+| **Language** | [Rust 1.88+](https://www.rust-lang.org/) | Safety, zero-cost abstractions, memory performance |
 | **TUI Rendering** | [`ratatui 0.29`](https://ratatui.rs/) & [`crossterm 0.28`](https://github.com/crossterm-rs/crossterm) | Terminal graphics, event streaming, mouse tracking |
 | **Async Engine** | [`tokio 1.43`](https://tokio.rs/) & [`futures 0.3`](https://docs.rs/futures) | Multi-threaded async background job orchestration |
 | **FS Monitoring** | [`notify 8.0`](https://github.com/notify-rs/notify) | Real-time inotify file tree change detection |
@@ -312,19 +313,14 @@ fenestra/
 - [x] **Core Shell & Navigation**: Tree sidebar, virtualized details table, breadcrumbs, hybrid Vim/mouse input.
 - [x] **Safe Operations & Multi-View**: Async file ops, Freedesktop Trash integration, tabs & dual-pane mode.
 - [x] **Rich Previews & Polish**: Syntect syntax highlighting, Kitty/Sixel image graphics, archive inspection, live Omarchy theme sync.
-- [ ] **Extended Integrations**: Custom keybinding overrides via TOML, `$PAGER` support, and Kitty keyboard protocol enhancements.
-- [ ] **Packaging & Distribution**: Prebuilt binaries, AUR package (`fenestra-bin`), Debian package (`.deb`), and crates.io release.
+- [x] **Extended Integrations**: Custom keybinding overrides via TOML, `$PAGER` / `$EDITOR` integration, shell completions, and man page generation.
+- [x] **Packaging & Distribution**: Multi-architecture static binaries, one-line installer script, and crates.io release (`fenestra-cli`).
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature ideas are warmly welcome!
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/cool-enhancement`)
-3. Commit your changes (`git commit -m 'Add some cool feature'`)
-4. Push to the branch (`git push origin feature/cool-enhancement`)
-5. Open a Pull Request
+Contributions, issues, and feature ideas are warmly welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and architecture overview.
 
 ---
 
