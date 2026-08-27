@@ -2180,3 +2180,61 @@ async fn test_open_terminal_and_editor_paths() {
 
     let _ = std::fs::remove_dir_all(&base);
 }
+
+#[tokio::test]
+async fn test_copy_file_path_context_action() {
+    use cardea::app::ContextAction;
+    use tokio::sync::mpsc::unbounded_channel;
+
+    let base = std::env::temp_dir().join(format!("cardea_copypath_{}", std::process::id()));
+    std::fs::create_dir_all(&base).unwrap();
+    let target_file = base.join("hello.txt");
+    std::fs::write(&target_file, "content").unwrap();
+
+    let (tx, mut rx) = unbounded_channel::<AppEvent>();
+    let config = Config::default();
+    let mut app = App::new(Some(base.clone()), &config, tx);
+    wait_for_scan(&mut app, &mut rx, 1).await;
+
+    // 1. Context menu contains "Copy file path"
+    app.open_context_menu_at(10, 10);
+    let menu = app.context_menu.as_ref().expect("context menu is open");
+    let has_copy_path = menu.items.iter().any(|item| {
+        item.label.contains("Copy file path") && item.action == Some(ContextAction::CopyFilePath)
+    });
+    assert!(
+        has_copy_path,
+        "context menu should have 'Copy file path' item"
+    );
+
+    // 2. Execute Copy file path via context action
+    app.execute_context_action(ContextAction::CopyFilePath);
+    assert!(app.context_menu.is_none(), "executing action closes menu");
+    let status = app
+        .status_message
+        .as_ref()
+        .map(|m| m.text.as_str())
+        .unwrap_or("");
+    assert!(
+        status.contains("Copied path") && status.contains("hello.txt"),
+        "status reports copied path: {}",
+        status
+    );
+
+    // 3. Targeted copy file path (e.g. sidebar node or specific path)
+    let explicit_path = base.join("explicit.rs");
+    app.open_context_menu_for_path(explicit_path.clone(), 5, 5);
+    app.execute_context_action(ContextAction::CopyFilePath);
+    let status_target = app
+        .status_message
+        .as_ref()
+        .map(|m| m.text.as_str())
+        .unwrap_or("");
+    assert!(
+        status_target.contains("Copied path") && status_target.contains("explicit.rs"),
+        "status reports targeted path: {}",
+        status_target
+    );
+
+    let _ = std::fs::remove_dir_all(&base);
+}

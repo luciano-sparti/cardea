@@ -254,6 +254,7 @@ pub enum ContextAction {
     Open,
     Copy,
     Cut,
+    CopyFilePath,
     Paste,
     NewFolder,
     NewFile,
@@ -1267,6 +1268,10 @@ impl App {
         if has_target {
             items.push(ContextMenuItem::enabled(" 󰆏 Copy", ContextAction::Copy));
             items.push(ContextMenuItem::enabled(" 󰆎 Cut", ContextAction::Cut));
+            items.push(ContextMenuItem::enabled(
+                " 󰅍 Copy file path",
+                ContextAction::CopyFilePath,
+            ));
         }
         items.push(ContextMenuItem::enabled(" 󰁉 Paste", ContextAction::Paste));
         // Directory-scoped creation actions work with or without a target
@@ -1485,7 +1490,7 @@ impl App {
             anchor_y: y,
             selected: 0,
             scroll_offset: 0,
-            max_visible: 14 + user_actions.len(),
+            max_visible: 15 + user_actions.len(),
             screen_rect: Rect::default(),
             items: Self::build_context_items(has_target, &user_actions, target_path.as_deref()),
             target: None,
@@ -1513,7 +1518,7 @@ impl App {
             anchor_y: y,
             selected: 0,
             scroll_offset: 0,
-            max_visible: 14 + user_actions.len(),
+            max_visible: 15 + user_actions.len(),
             screen_rect: Rect::default(),
             items,
             target: Some(path),
@@ -1594,6 +1599,7 @@ impl App {
                 }
                 None => self.cut_selected(),
             },
+            ContextAction::CopyFilePath => self.copy_file_path(target),
             // A directory target receives the paste; otherwise paste into
             // the current directory as usual
             ContextAction::Paste => {
@@ -2237,6 +2243,40 @@ impl App {
             self.tab().current_dir.clone(),
             clipboard.cut,
         );
+    }
+
+    /// Copies the absolute filesystem path(s) of the target or current selection to the system clipboard.
+    pub fn copy_file_path(&mut self, target: Option<PathBuf>) {
+        let paths: Vec<PathBuf> = if let Some(path) = target {
+            vec![path]
+        } else if !self.tab().multi_selected.is_empty() {
+            let mut sel: Vec<PathBuf> = self.tab().multi_selected.iter().cloned().collect();
+            sel.sort();
+            sel
+        } else if let Some(entry) = self.selected_entry() {
+            vec![entry.path.clone()]
+        } else {
+            Vec::new()
+        };
+
+        if paths.is_empty() {
+            self.set_status_error("No file selected".to_string());
+            return;
+        }
+
+        let text = paths
+            .iter()
+            .map(|p| p.to_string_lossy().to_string())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        copy_to_system_clipboard(&text);
+
+        if paths.len() == 1 {
+            self.set_status_info(format!("Copied path: {}", paths[0].display()));
+        } else {
+            self.set_status_info(format!("Copied {} file path(s)", paths.len()));
+        }
     }
 
     /// Conflict-aware transfer entry point: filters no-ops, detects name
@@ -4047,4 +4087,66 @@ fn is_executable(path: &Path) -> bool {
 #[cfg(not(unix))]
 fn is_executable(path: &Path) -> bool {
     path.is_file()
+}
+
+fn base64_encode(bytes: &[u8]) -> String {
+    const TABLE: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut buf = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for chunk in bytes.chunks(3) {
+        let b0 = chunk[0];
+        let b1 = chunk.get(1).copied().unwrap_or(0);
+        let b2 = chunk.get(2).copied().unwrap_or(0);
+        buf.push(TABLE[(b0 >> 2) as usize] as char);
+        buf.push(TABLE[(((b0 & 0x03) << 4) | (b1 >> 4)) as usize] as char);
+        if chunk.len() > 1 {
+            buf.push(TABLE[(((b1 & 0x0f) << 2) | (b2 >> 6)) as usize] as char);
+        } else {
+            buf.push('=');
+        }
+        if chunk.len() > 2 {
+            buf.push(TABLE[(b2 & 0x3f) as usize] as char);
+        } else {
+            buf.push('=');
+        }
+    }
+    buf
+}
+
+/// Copies text to the system clipboard via external tools (wl-copy, xclip, xsel, pbcopy, clip.exe)
+/// and writes the OSC 52 terminal sequence to stdout.
+pub fn copy_to_system_clipboard(text: &str) {
+    let candidates: &[(&str, &[&str])] = &[
+        ("wl-copy", &[]),
+        ("xclip", &["-selection", "clipboard"]),
+        ("xsel", &["--clipboard", "--input"]),
+        ("pbcopy", &[]),
+        ("clip.exe", &[]),
+    ];
+
+    for &(cmd, args) in candidates {
+        if let Ok(mut child) = std::process::Command::new(cmd)
+            .args(args)
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+        {
+            if let Some(mut stdin) = child.stdin.take() {
+                use std::io::Write;
+                let _ = stdin.write_all(text.as_bytes());
+            }
+            if let Ok(status) = child.wait() {
+                if status.success() {
+                    break;
+                }
+            }
+        }
+    }
+
+    // Emit OSC 52 sequence so terminal emulators support it over SSH/tmux
+    let b64 = base64_encode(text.as_bytes());
+    let osc52 = format!("\x1b]52;c;{}\x07", b64);
+    use std::io::Write;
+    let _ = std::io::stdout().write_all(osc52.as_bytes());
+    let _ = std::io::stdout().flush();
 }

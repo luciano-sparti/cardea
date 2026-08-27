@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-08-27
+
+### Added
+- **Copy File Path Context Menu Action**: Added a dedicated "Copy file path" action to the right-click and keyboard context menu (`m`) allowing users to copy the absolute filesystem path of selected files/folders directly to the system clipboard (Wayland `wl-copy`, X11 `xclip`/`xsel`, macOS `pbcopy`, Windows `clip.exe`, and terminal OSC 52 sequence).
+- **Crate Assets Inclusion**: Added `assets/**/*` to `Cargo.toml` package inclusions.
+
 ## [1.0.0] - 2026-08-27
 
 ### Initial Release
