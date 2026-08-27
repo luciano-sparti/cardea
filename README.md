@@ -84,23 +84,13 @@ Install the latest prebuilt release binary, man pages, shell completions, and de
 curl -sSL https://raw.githubusercontent.com/Luciano-Sparti/fenestra/main/install.sh | bash
 ```
 
-### 2. Arch Linux (AUR)
-
-```bash
-# Build from source
-yay -S fenestra
-
-# Or install prebuilt binary
-yay -S fenestra-bin
-```
-
-### 3. Cargo (crates.io)
+### 2. Cargo (crates.io)
 
 ```bash
 cargo install fenestra-cli
 ```
 
-### 4. Building from Source
+### 3. Building from Source
 
 ```bash
 # Clone the repository
