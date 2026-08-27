@@ -97,7 +97,7 @@ yay -S fenestra-bin
 ### 3. Cargo (crates.io)
 
 ```bash
-cargo install fenestra
+cargo install fenestra-cli
 ```
 
 ### 4. Building from Source
