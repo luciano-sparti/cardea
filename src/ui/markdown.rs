@@ -231,21 +231,23 @@ fn render_inline(text: &str, theme: &Theme) -> Vec<Span<'static>> {
     let mut remaining = text;
 
     while !remaining.is_empty() {
-        // Bold: **text** or __text__
-        if let Some(end) = find_inline_delim(remaining, "**", 2) {
-            if end > 2 {
-                let inner = &remaining[2..end];
-                spans.push(Span::styled(
-                    inner.to_string(),
-                    Style::default().fg(theme.fg).add_modifier(Modifier::BOLD),
-                ));
-                remaining = &remaining[end + 2..];
-                continue;
+        // Bold: **text**
+        if remaining.starts_with("**") {
+            if let Some(end) = find_inline_delim(remaining, "**", 2) {
+                if end > 2 {
+                    let inner = &remaining[2..end];
+                    spans.push(Span::styled(
+                        inner.to_string(),
+                        Style::default().fg(theme.fg).add_modifier(Modifier::BOLD),
+                    ));
+                    remaining = &remaining[end + 2..];
+                    continue;
+                }
             }
         }
 
-        // Italic: *text* or _text_
-        if !remaining.starts_with("**") {
+        // Italic: *text*
+        if remaining.starts_with('*') && !remaining.starts_with("**") {
             if let Some(end) = find_inline_delim(remaining, "*", 1) {
                 if end > 0 {
                     let inner = &remaining[1..end];
@@ -301,11 +303,22 @@ fn render_inline(text: &str, theme: &Theme) -> Vec<Span<'static>> {
         let next_special = remaining
             .find(['*', '_', '`', '['])
             .unwrap_or(remaining.len());
-        spans.push(Span::styled(
-            remaining[..next_special].to_string(),
-            Style::default().fg(theme.fg),
-        ));
-        remaining = &remaining[next_special..];
+        if next_special == 0 {
+            // The leading special char didn't match any inline pattern above —
+            // emit it as literal text and advance past it.
+            let ch_len = remaining.chars().next().map_or(1, |c| c.len_utf8());
+            spans.push(Span::styled(
+                remaining[..ch_len].to_string(),
+                Style::default().fg(theme.fg),
+            ));
+            remaining = &remaining[ch_len..];
+        } else {
+            spans.push(Span::styled(
+                remaining[..next_special].to_string(),
+                Style::default().fg(theme.fg),
+            ));
+            remaining = &remaining[next_special..];
+        }
     }
 
     spans
@@ -362,5 +375,55 @@ mod tests {
         assert_eq!(parse_ordered_list_item("1. first"), Some((1, "first")));
         assert_eq!(parse_ordered_list_item("42. answer"), Some((42, "answer")));
         assert_eq!(parse_ordered_list_item("not a list"), None);
+    }
+
+    #[test]
+    fn test_render_inline_unmatched_special_chars() {
+        // These inputs previously caused an infinite loop (the crash bug).
+        // Each starts with a special char that doesn't form a valid inline
+        // pattern, so the plain-text fallback must advance past it.
+        let theme = Theme::from_name("ansi");
+
+        // Lone asterisk (e.g. glob pattern or math)
+        let spans = render_inline("*.rs files", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "*.rs files");
+
+        // Lone backtick
+        let spans = render_inline("`unclosed code", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "`unclosed code");
+
+        // Lone bracket
+        let spans = render_inline("[not a link", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "[not a link");
+
+        // Lone underscore
+        let spans = render_inline("_no closing", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "_no closing");
+
+        // Multiple unmatched specials in a row
+        let spans = render_inline("*_`[literal", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "*_`[literal");
+
+        // Multi-byte characters (e.g. bullet •) must not cause panics
+        // when find_inline_delim skips past the opening delimiter width.
+        let spans = render_inline("• item text", &theme);
+        let text: String = spans.iter().map(|s| s.content.as_ref()).collect();
+        assert_eq!(text, "• item text");
+    }
+
+    #[test]
+    fn test_render_project_markdown_files() {
+        let theme = Theme::from_name("ansi");
+        for name in ["README.md", "PLAN.md", "CHANGELOG.md", "CONTRIBUTING.md"] {
+            let path = format!("/home/aredain/Projects/fenestra/{}", name);
+            if let Ok(text) = std::fs::read_to_string(&path) {
+                let _lines = render_markdown(&text, &theme);
+            }
+        }
     }
 }
