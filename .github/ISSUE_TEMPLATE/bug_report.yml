@@ -1,0 +1,56 @@
+name: 🐛 Bug Report
+description: Report a reproducible bug or unexpected behavior in Fenestra
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please ensure you are running the latest version of Fenestra.
+  - type: input
+    id: version
+    attributes:
+      label: Fenestra Version
+      description: Run `fenestra --version`
+      placeholder: "e.g. fenestra 0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment & Terminal
+      description: Operating system, Linux distribution, terminal emulator (e.g. Kitty, Alacritty, WezTerm, Ghostty, Foot) and desktop environment / window manager.
+      placeholder: "e.g. Arch Linux, Kitty 0.35, Hyprland"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1. Run `fenestra /some/path`
+        2. Press `F7` to toggle preview
+        3. Observe crash or incorrect rendering
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log Output or Crash Report
+      description: Relevant logs from `~/.local/state/fenestra/fenestra.log` if applicable.
+      render: shell

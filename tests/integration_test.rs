@@ -4,9 +4,9 @@
 use std::io::Write;
 
 use fenestra::config::Config;
-use tempfile::tempdir;
 use ratatui::backend::TestBackend;
 use ratatui::Terminal;
+use tempfile::tempdir;
 
 /// Config loads and round-trips correctly with defaults
 #[test]
@@ -21,10 +21,7 @@ fn test_config_defaults_load() {
         deserialized.layout.sidebar_width_percent,
         config.layout.sidebar_width_percent
     );
-    assert_eq!(
-        deserialized.layout.preview_dock,
-        config.layout.preview_dock
-    );
+    assert_eq!(deserialized.layout.preview_dock, config.layout.preview_dock);
     assert_eq!(
         deserialized.layout.preview_height_percent,
         config.layout.preview_height_percent
@@ -34,8 +31,8 @@ fn test_config_defaults_load() {
 /// Terminal rendering with ratatui TestBackend (headless)
 #[test]
 fn test_terminal_rendering_headless() {
-    use ratatui::widgets::Paragraph;
     use ratatui::style::Style;
+    use ratatui::widgets::Paragraph;
 
     let backend = TestBackend::new(80, 24);
     // Clone backend before moving into Terminal
@@ -87,16 +84,16 @@ fn test_dir_listing_sorting() {
     }
 
     // Read directory entries
-    let mut entries: Vec<_> = std::fs::read_dir(dir.path())
-        .unwrap()
-        .flatten()
-        .collect();
+    let mut entries: Vec<_> = std::fs::read_dir(dir.path()).unwrap().flatten().collect();
 
     // Sort by name
     entries.sort_by_key(|a| a.file_name());
 
     // Verify sorted order
-    let names: Vec<String> = entries.iter().map(|e| e.file_name().to_str().unwrap().to_string()).collect();
+    let names: Vec<String> = entries
+        .iter()
+        .map(|e| e.file_name().to_str().unwrap().to_string())
+        .collect();
     assert_eq!(names[0], "alpha.doc");
     assert_eq!(names[1], "mid.txt");
     assert_eq!(names[2], "zebra.txt");

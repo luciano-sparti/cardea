@@ -1,7 +1,8 @@
 [package]
 name = "fenestra"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+rust-version = "1.78"
 authors = ["Fenestra Contributors"]
 description = "A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics"
 license = "MIT"
@@ -10,10 +11,22 @@ repository = "https://github.com/Luciano-Sparti/fenestra"
 homepage = "https://github.com/Luciano-Sparti/fenestra"
 keywords = ["tui", "file-manager", "ratatui", "explorer", "terminal"]
 categories = ["command-line-utilities", "filesystem"]
+include = [
+    "src/**/*",
+    "tests/**/*",
+    "benches/**/*",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE",
+]
 
 [[bin]]
 name = "fenestra"
 path = "src/main.rs"
+
+[[bench]]
+name = "fenestra_benches"
+harness = false
 
 [dependencies]
 ratatui = { version = "0.29", features = ["all-widgets", "crossterm", "serde"] }
@@ -21,6 +34,8 @@ crossterm = { version = "0.28", features = ["event-stream"] }
 tokio = { version = "1.43", features = ["full"] }
 futures = "0.3"
 clap = { version = "4.5", features = ["derive"] }
+clap_complete = "4.5"
+clap_mangen = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.8"
 notify = "8.0"

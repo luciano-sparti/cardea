@@ -1,7 +1,7 @@
 use std::io::stdout;
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -38,6 +38,14 @@ struct Cli {
     /// Hide sidebar places and tree panel
     #[arg(long = "no-sidebar")]
     no_sidebar: bool,
+
+    /// Generate shell completion script and exit (bash, zsh, fish, elvish, powershell)
+    #[arg(long = "generate-completions", value_name = "SHELL")]
+    generate_completions: Option<clap_complete::Shell>,
+
+    /// Generate man page to stdout and exit
+    #[arg(long = "generate-manpage")]
+    generate_manpage: bool,
 }
 
 fn install_panic_hook() {
@@ -74,11 +82,25 @@ fn init_logging() {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let cli = Cli::parse();
+
+    if let Some(shell) = cli.generate_completions {
+        let mut cmd = Cli::command();
+        clap_complete::generate(shell, &mut cmd, "fenestra", &mut std::io::stdout());
+        return Ok(());
+    }
+
+    if cli.generate_manpage {
+        let cmd = Cli::command();
+        let man = clap_mangen::Man::new(cmd);
+        man.render(&mut std::io::stdout())?;
+        return Ok(());
+    }
+
     // Install panic hook for clean terminal teardown on crash
     install_panic_hook();
     init_logging();
 
-    let cli = Cli::parse();
     let mut config = Config::load();
 
     // CLI overrides

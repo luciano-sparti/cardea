@@ -2,23 +2,32 @@ use crate::theme::adapt_syntax_color;
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use std::path::Path;
-use std::sync::LazyLock;
+use std::sync::OnceLock;
 use syntect::easy::HighlightLines;
 use syntect::highlighting::{FontStyle, ThemeSet};
 use syntect::parsing::SyntaxSet;
 
 /// Syntax definitions are parsed once per process (~10ms) and shared across
 /// all background preview loads.
-static SYNTAX_SET: LazyLock<SyntaxSet> = LazyLock::new(SyntaxSet::load_defaults_nonewlines);
-static THEME_SET: LazyLock<ThemeSet> = LazyLock::new(ThemeSet::load_defaults);
+static SYNTAX_SET: OnceLock<SyntaxSet> = OnceLock::new();
+static THEME_SET: OnceLock<ThemeSet> = OnceLock::new();
+
+fn get_syntax_set() -> &'static SyntaxSet {
+    SYNTAX_SET.get_or_init(SyntaxSet::load_defaults_nonewlines)
+}
+
+fn get_theme_set() -> &'static ThemeSet {
+    THEME_SET.get_or_init(ThemeSet::load_defaults)
+}
 
 /// Highlights `text` (a full file's contents) using the syntax inferred from
 /// `path`. Returns `None` when no syntax definition matches, in which case
 /// the caller falls back to plain rendering.
 pub fn highlight(path: &Path, text: &str) -> Option<Vec<Line<'static>>> {
-    let ss = &*SYNTAX_SET;
+    let ss = get_syntax_set();
     let syntax = ss.find_syntax_for_file(path).ok().flatten()?;
-    let theme = THEME_SET.themes.get("base16-ocean.dark")?;
+    let themes = get_theme_set();
+    let theme = themes.themes.get("base16-ocean.dark")?;
     let mut hl = HighlightLines::new(syntax, theme);
 
     let mut out = Vec::new();

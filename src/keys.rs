@@ -408,7 +408,10 @@ pub const BINDINGS: &[Binding] = &[
 /// All bindings that use at least one of the given modifiers, filtered by
 /// the current focus context. Bindings with `GLOBAL` context are always
 /// shown; others only when the focused panel matches.
-pub fn bindings_using_modifiers(pressed: KeyModifiers, focus_ctx: FocusContext) -> Vec<&'static Binding> {
+pub fn bindings_using_modifiers(
+    pressed: KeyModifiers,
+    focus_ctx: FocusContext,
+) -> Vec<&'static Binding> {
     BINDINGS
         .iter()
         .filter(|b| b.matches_modifier(pressed) && b.contexts.contains(focus_ctx))

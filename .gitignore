@@ -1,5 +1,7 @@
 # Build & compilation artifacts
 /target/
+/dist/
+/staging/
 **/*.rs.bk
 *.bk
 *.profraw

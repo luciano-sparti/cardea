@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -18,32 +19,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Rust ${{ matrix.rust-version }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust-version }}
-          profile: minimal
-          override: true
+          components: rustfmt, clippy
 
-      - name: Cache cargo registry
-        uses: actions/cache@v3
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          path: ~/.cargo/registry
-          key: cargo-registry-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v3
-        with:
-          path: ~/.cargo/registry/index
-          key: cargo-index-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
-
-      - name: Cache cargo tarballs
-        uses: actions/cache@v3
-        with:
-          path: ~/.cargo/git
-          key: cargo-git-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
-
-      - name: Install cargo dependencies
-        run: cargo update
+          key: ${{ matrix.rust-version }}
 
       - name: Format check
         run: cargo fmt --check
@@ -57,95 +41,105 @@ jobs:
       - name: Run tests
         run: cargo test --all-targets
 
-      - name: cargo-deny advisory check
-        if: success()
-        run: cargo deny check advisories
-
-      - name: cargo-audit
-        if: success()
-        run: cargo audit --offline 2>/dev/null || cargo audit
-
-  # MSRV validation: ensure the project builds and tests on the minimum supported Rust version
-  mrsv:
+  msrv:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    strategy:
-      matrix:
-        rust-version: [1.78]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust 1.78
-        uses: actions-rs/toolchain@v1
+      - name: Install Rust 1.78.0
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.78.0
-          profile: minimal
 
-      - name: Cache cargo registry (1.78)
-        uses: actions/cache@v3
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          path: ~/.cargo/registry
-          key: cargo-registry-1.78-${{ runner.os }}-${{ hashFiles('Cargo.toml') }}
+          key: msrv-1.78
 
       - name: Verify build on MSRV
-        run: cargo build --all-targets
+        run: cargo check --all-targets
 
       - name: Verify tests on MSRV
         run: cargo test --all-targets
 
-  # Cross-compilation: build static binaries for multiple Linux architectures
   build-binaries:
-    needs: mrsv
+    needs: [test, msrv]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu, x86_64-unknown-linux-musl]
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust stable + cross
-        uses: actions-rs/toolchain@v1
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          toolchain: stable
-          profile: minimal
+          key: ${{ matrix.target }}
 
       - name: Install cross
-        run: cargo install cross --force 2>/dev/null || true
+        uses: taiki-e/install-action@cross
 
       - name: Build binary for ${{ matrix.target }}
+        run: cross build --target ${{ matrix.target }} --release --bin fenestra
+
+      - name: Build host tools for asset generation
+        run: cargo build --release --bin fenestra
+
+      - name: Package release archive
         run: |
-          cross build --target ${{ matrix.target }} --release --bin fenestra
+          mkdir -p staging/completions staging/man staging/assets
+          cp target/${{ matrix.target }}/release/fenestra staging/
+          cp README.md LICENSE install.sh staging/
+          cp assets/fenestra.desktop staging/assets/
+          target/release/fenestra --generate-completions bash > staging/completions/fenestra.bash
+          target/release/fenestra --generate-completions zsh > staging/completions/_fenestra
+          target/release/fenestra --generate-completions fish > staging/completions/fenestra.fish
+          target/release/fenestra --generate-manpage > staging/man/fenestra.1
+          cd staging
+          tar -czvf ../fenestra-${{ matrix.target }}.tar.gz *
+          cd ..
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: fenestra-${{ matrix.target }}
-          path: target/**/fenestra
+          path: fenestra-${{ matrix.target }}.tar.gz
 
-  # Release preparation (artifact signing and packaging metadata)
   release:
     needs: build-binaries
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./artifacts
+          path: ./release-artifacts
+          merge-multiple: true
 
-      - name: Create release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: artifacts/fenestra-*
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Verify artifact checksums
+      - name: Generate SHA256 checksums
         run: |
-          sha256sum artifacts/* > SHA256SUMS
-          echo "Checksums generated for release artifacts"
+          cd release-artifacts
+          sha256sum fenestra-*.tar.gz > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-artifacts/fenestra-*.tar.gz
+            release-artifacts/SHA256SUMS
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}

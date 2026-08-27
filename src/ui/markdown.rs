@@ -69,10 +69,7 @@ pub fn render_markdown(text: &str, theme: &Theme) -> Vec<Line<'static>> {
         // Blockquote
         if let Some(quoted) = raw_line.strip_prefix('>') {
             let content = quoted.strip_prefix(' ').unwrap_or(quoted);
-            let mut spans = vec![Span::styled(
-                " ▎ ",
-                Style::default().fg(theme.accent),
-            )];
+            let mut spans = vec![Span::styled(" ▎ ", Style::default().fg(theme.accent))];
             spans.extend(render_inline(content, theme));
             out.push(Line::from(spans));
             continue;
@@ -80,10 +77,7 @@ pub fn render_markdown(text: &str, theme: &Theme) -> Vec<Line<'static>> {
 
         // Unordered list items
         if let Some(content) = parse_list_item(raw_line) {
-            let mut spans = vec![Span::styled(
-                "   • ",
-                Style::default().fg(theme.accent),
-            )];
+            let mut spans = vec![Span::styled("   • ", Style::default().fg(theme.accent))];
             spans.extend(render_inline(content, theme));
             out.push(Line::from(spans));
             continue;
@@ -105,7 +99,10 @@ pub fn render_markdown(text: &str, theme: &Theme) -> Vec<Line<'static>> {
             let inner = raw_line.trim().strip_prefix('|').unwrap_or(raw_line.trim());
             let inner = inner.strip_suffix('|').unwrap_or(inner);
             // Separator row (|---|---|)
-            if inner.split('|').all(|c| c.trim().chars().all(|ch| ch == '-' || ch == ':')) {
+            if inner
+                .split('|')
+                .all(|c| c.trim().chars().all(|ch| ch == '-' || ch == ':'))
+            {
                 out.push(Line::from(Span::styled(
                     "   ─── ─── ─── ─── ───",
                     Style::default().fg(theme.border),
@@ -127,10 +124,7 @@ pub fn render_markdown(text: &str, theme: &Theme) -> Vec<Line<'static>> {
         // Image reference (render as styled text, not actual image)
         if let Some((alt, _url)) = parse_image_ref(raw_line) {
             out.push(Line::from(vec![
-                Span::styled(
-                    "  󰥹 ",
-                    Style::default().fg(theme.accent),
-                ),
+                Span::styled("  󰥹 ", Style::default().fg(theme.accent)),
                 Span::styled(
                     format!("[{}]", alt),
                     Style::default()
@@ -243,9 +237,7 @@ fn render_inline(text: &str, theme: &Theme) -> Vec<Span<'static>> {
                 let inner = &remaining[2..end];
                 spans.push(Span::styled(
                     inner.to_string(),
-                    Style::default()
-                        .fg(theme.fg)
-                        .add_modifier(Modifier::BOLD),
+                    Style::default().fg(theme.fg).add_modifier(Modifier::BOLD),
                 ));
                 remaining = &remaining[end + 2..];
                 continue;
@@ -259,9 +251,7 @@ fn render_inline(text: &str, theme: &Theme) -> Vec<Span<'static>> {
                     let inner = &remaining[1..end];
                     spans.push(Span::styled(
                         inner.to_string(),
-                        Style::default()
-                            .fg(theme.fg)
-                            .add_modifier(Modifier::ITALIC),
+                        Style::default().fg(theme.fg).add_modifier(Modifier::ITALIC),
                     ));
                     remaining = &remaining[end + 1..];
                     continue;

@@ -1,0 +1,40 @@
+# Maintainer: Luciano Sparti <https://github.com/Luciano-Sparti/fenestra>
+pkgname=fenestra-bin
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics (prebuilt binary)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/Luciano-Sparti/fenestra"
+license=('MIT')
+provides=('fenestra')
+conflicts=('fenestra')
+depends=('gcc-libs')
+
+source_x86_64=("https://github.com/Luciano-Sparti/fenestra/releases/download/v${pkgver}/fenestra-v${pkgver}-x86_64-unknown-linux-gnu.tar.gz")
+source_aarch64=("https://github.com/Luciano-Sparti/fenestra/releases/download/v${pkgver}/fenestra-v${pkgver}-aarch64-unknown-linux-gnu.tar.gz")
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+package() {
+    local src_dir="${srcdir}/fenestra-v${pkgver}-${CARCH}-unknown-linux-gnu"
+    if [ ! -d "$src_dir" ]; then
+        src_dir="${srcdir}"
+    fi
+
+    install -Dm755 "${src_dir}/fenestra" "${pkgdir}/usr/bin/fenestra"
+    install -Dm644 "${src_dir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -Dm644 "${src_dir}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    install -Dm644 "${src_dir}/assets/fenestra.desktop" "${pkgdir}/usr/share/applications/fenestra.desktop"
+
+    # Shell completions
+    if [ -d "${src_dir}/completions" ]; then
+        install -Dm644 "${src_dir}/completions/fenestra.bash" "${pkgdir}/usr/share/bash-completion/completions/fenestra"
+        install -Dm644 "${src_dir}/completions/_fenestra" "${pkgdir}/usr/share/zsh/site-functions/_fenestra"
+        install -Dm644 "${src_dir}/completions/fenestra.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/fenestra.fish"
+    fi
+
+    # Man page
+    if [ -f "${src_dir}/man/fenestra.1" ]; then
+        install -Dm644 "${src_dir}/man/fenestra.1" "${pkgdir}/usr/share/man/man1/fenestra.1"
+    fi
+}

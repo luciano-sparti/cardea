@@ -1,0 +1,116 @@
+# ==============================================================================
+# Fenestra Configuration Reference
+# Default location: ~/.config/fenestra/config.toml
+# ==============================================================================
+
+version = 1
+
+[general]
+# Color theme palette:
+# Available: "catppuccin-mocha", "catppuccin-latte", "tokyo-night", "gruvbox",
+#            "nord", "solarized-dark", "solarized-light", "high-contrast", "ansi", "omarchy"
+theme = "catppuccin-mocha"
+
+# Show hidden files and dotfiles by default (toggle at runtime with Ctrl+H or '.')
+show_hidden = false
+
+# Group directories before files when sorting
+dirs_first = true
+
+# Use natural numerical sort order (e.g. file2 before file10)
+natural_sort = true
+
+# Enable mouse event capture (clicking, scrolling, dragging & dropping)
+mouse_enabled = true
+
+# Icon tier:
+# - "nerd": Nerd Fonts v3 glyphs (default)
+# - "unicode": Narrow standard Unicode symbols
+# - "ascii": Plain ASCII markers (e.g. / for folders, * for executables)
+icon_style = "nerd"
+
+# Colorize file names using rules from your $LS_COLORS environment variable
+ls_colors_enabled = true
+
+# Default sorting column: "name", "size", "modified", "extension", "permissions"
+default_sort_column = "name"
+
+# Default sort direction: "ascending", "descending"
+default_sort_direction = "ascending"
+
+
+[layout]
+# Show the left sidebar (places bookmarks & directory tree)
+show_sidebar = true
+
+# Width percentage of the sidebar relative to the total terminal width (10 - 50)
+sidebar_width_percent = 20
+
+# Start with the file preview drawer visible (toggle at runtime with F7)
+show_preview = false
+
+# Width percentage of the preview drawer when docked on the side (15 - 70)
+preview_width_percent = 35
+
+# Preview dock placement: "side" (right column) or "bottom" (row below table)
+preview_dock = "side"
+
+# Height percentage when preview is docked at the bottom (10 - 70)
+preview_height_percent = 30
+
+
+# ==============================================================================
+# Custom Theme Overrides (Optional)
+# Allows overriding individual palette colors with custom hex codes
+# ==============================================================================
+# [custom_theme]
+# base = "catppuccin-mocha"
+# bg = "#1e1e2e"
+# fg = "#cdd6f4"
+# accent = "#89b4fa"
+# border = "#45475a"
+# selection_bg = "#313244"
+# directory = "#89b4fa"
+# executable = "#a6e3a1"
+
+
+# ==============================================================================
+# Custom User Actions
+# Executed safely as raw argument vectors (never passed through shell strings)
+# Supported placeholders:
+#   {file}     - Full path to the focused file
+#   {path}     - Alias for {file}
+#   {selected} - First selected item (or focused item if nothing selected)
+#   {dir}      - Current working directory
+# ==============================================================================
+
+[[actions]]
+name = "Git Status"
+key = "g"
+command = "git"
+args = ["status"]
+
+[[actions]]
+name = "Extract Archive"
+key = "x"
+command = "tar"
+args = ["xf", "{file}"]
+
+# [[actions]]
+# name = "Open in VS Code"
+# key = "ctrl+shift+c"
+# command = "code"
+# args = ["{dir}"]
+
+
+# ==============================================================================
+# Key Remappings (Optional)
+# Intercept key chords and redirect them to other actions
+# ==============================================================================
+# [[remap]]
+# from = "ctrl+j"
+# to = "down"
+
+# [[remap]]
+# from = "ctrl+k"
+# to = "up"

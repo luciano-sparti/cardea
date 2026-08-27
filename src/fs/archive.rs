@@ -171,7 +171,12 @@ pub fn extract_archive(path: &Path, dest_dir: &Path) -> Result<(), String> {
     let result = match kind {
         Kind::Tar => {
             let output = std::process::Command::new("tar")
-                .args(["xf", &path.to_string_lossy(), "-C", &dest_dir.to_string_lossy()])
+                .args([
+                    "xf",
+                    &path.to_string_lossy(),
+                    "-C",
+                    &dest_dir.to_string_lossy(),
+                ])
                 .output()
                 .map_err(|e| format!("Failed to run tar: {} (is tar installed?)", e))?;
             output

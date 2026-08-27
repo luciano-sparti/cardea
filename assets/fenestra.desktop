@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Fenestra
+Comment=A keyboard-driven, mouse-capable terminal file explorer
+GenericName=File Manager
+Exec=fenestra %U
+Icon=system-file-manager
+Terminal=true
+Type=Application
+Categories=System;FileTools;FileManager;Utility;
+Keywords=file;manager;explorer;terminal;tui;ratatui;
+MimeType=inode/directory;
+StartupNotify=false

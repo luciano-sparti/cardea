@@ -776,11 +776,7 @@ impl App {
             job_queue_rect: Rect::default(),
             job_queue_cancel_rects: Vec::new(),
             user_actions: config.actions.clone(),
-            parsed_remaps: config
-                .remap
-                .iter()
-                .filter_map(|r| r.parsed())
-                .collect(),
+            parsed_remaps: config.remap.iter().filter_map(|r| r.parsed()).collect(),
             icon_style,
             ls_colors_enabled: config.general.ls_colors_enabled,
             should_quit: false,
@@ -1660,11 +1656,10 @@ impl App {
                         .unwrap_or_else(|| "archive".to_string());
                     let name_for_status = archive_name.clone();
                     tokio::spawn(async move {
-                        let result =
-                            tokio::task::spawn_blocking(move || {
-                                crate::fs::archive::extract_archive(&path, &dest)
-                            })
-                            .await;
+                        let result = tokio::task::spawn_blocking(move || {
+                            crate::fs::archive::extract_archive(&path, &dest)
+                        })
+                        .await;
                         match result {
                             Ok(Ok(())) => {
                                 let _ = event_tx.send(AppEvent::StatusMessage {

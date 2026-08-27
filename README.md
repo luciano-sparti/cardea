@@ -11,6 +11,7 @@
 
 ### A keyboard-driven, mouse-capable terminal file explorer with classical desktop file manager ergonomics.
 
+[![CI](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/fenestra/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust: 1.78+](https://img.shields.io/badge/Rust-1.78%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![Built with Ratatui](https://img.shields.io/badge/TUI-Ratatui%200.29-green.svg)](https://ratatui.rs)
@@ -67,7 +68,7 @@
 
 ### 🎨 Live Theming & Polish
 - **Omarchy Dynamic Theme Sync**: Automatically watches `~/.config/omarchy/current/theme` to hot-reload color palettes instantly without restarts.
-- **Curated Built-in Themes**: Catppuccin, Tokyo Night, Gruvbox, Nord, Solarized, and ANSI fallback palettes.
+- **Curated Built-in Themes**: Catppuccin Mocha, Catppuccin Latte, Tokyo Night, Gruvbox, Nord, Solarized, and ANSI fallback palettes.
 - **Nerd Fonts & LS_COLORS**: File icons styled via Nerd Fonts v3 (with Unicode and ASCII fallbacks) and native `$LS_COLORS` syntax highlighting.
 - **Keyboard Chord Discovery**: Pressing an incomplete `Ctrl` or `Alt` chord displays an instant discovery panel showing all available key combos.
 
@@ -75,23 +76,41 @@
 
 ## 🚀 Installation
 
-### Prerequisites
-- **Linux** (x86_64 or aarch64)
-- **Rust 1.78+** (with `cargo`)
-- A modern terminal emulator with truecolor & mouse support (e.g. *Kitty*, *Alacritty*, *WezTerm*, *Ghostty*, *Foot*)
-- Optional: A [Nerd Font](https://www.nerdfonts.com/) for file type icons
+### 1. Quick Install (Linux x86_64 / aarch64)
 
-### Building from Source
+Install the latest prebuilt release binary, man pages, shell completions, and desktop entry with a single command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/Luciano-Sparti/fenestra/main/install.sh | bash
+```
+
+### 2. Arch Linux (AUR)
+
+```bash
+# Build from source
+yay -S fenestra
+
+# Or install prebuilt binary
+yay -S fenestra-bin
+```
+
+### 3. Cargo (crates.io)
+
+```bash
+cargo install fenestra
+```
+
+### 4. Building from Source
 
 ```bash
 # Clone the repository
 git clone https://github.com/Luciano-Sparti/fenestra.git
 cd fenestra
 
-# Build and run optimized release binary
-cargo run --release
+# Build and package locally
+./scripts/package.sh
 
-# Or install directly to ~/.cargo/bin
+# Or install directly
 cargo install --path .
 ```
 
@@ -118,28 +137,41 @@ fenestra --help
 | :--- | :--- |
 | **Navigation & Views** | |
 | `↑` / `k`, `↓` / `j` | Navigate selection up / down |
-| `←` / `h`, `→` / `l` | Expand/collapse tree or step directory hierarchy |
-| `Enter` / Double Click | Open file in default application (`xdg-open`) / Enter folder |
-| `Backspace` / `Alt+↑` | Navigate to parent directory |
-| `Ctrl+L` | Edit path bar manually |
+| `←` / `h` / `Backspace` | Navigate to parent directory |
+| `→` / `l` / `Enter` | Open folder or launch file with default handler (`xdg-open`) |
+| `Alt+←` / `Alt+→` | Navigate history backward / forward |
+| `Alt+↑` | Navigate to parent directory |
+| `Tab` / `Shift+Tab` | Cycle focus across panels (Sidebar ⇄ Table ⇄ Preview) |
+| `Ctrl+L` | Edit path bar manually (`Tab` for auto-completion) |
 | `Ctrl+T` / `Ctrl+W` | Open new tab / Close active tab |
-| `F3` | Toggle Dual-Pane Commander mode |
-| `i` / `Space` (Preview) | Toggle file preview drawer |
+| `Ctrl+Tab` / `Alt+1..9` | Cycle tabs / Jump directly to tab N |
+| `F3` | Toggle Dual-Pane Commander mode (`Tab` swaps pane focus) |
+| `F5` / `F6` | Cross-pane copy / move (in dual-pane mode) |
+| `F7` / `Shift+F7` | Toggle file preview panel / Cycle dock position (Side ⇄ Bottom) |
+| `v` | Quick look (open and focus preview) |
+| `b` / `F9` | Toggle sidebar tree visibility |
+| `Ctrl+H` / `.` | Toggle hidden / dotfiles |
+| `s` / `r` (or `Shift+S`) | Cycle sort column / Reverse sort direction |
 | **Selection & Operations** | |
 | `Space` / `Ctrl+Click` | Toggle multi-selection on active item |
 | `Shift+↑` / `Shift+↓` | Range multi-selection |
-| `Ctrl+A` | Select all items in directory |
-| `Ctrl+C` / `Ctrl+X` / `Ctrl+V` | Copy / Cut / Paste selection |
-| `F2` / `r` | Rename selected item |
-| `Delete` | Move selection to System Trash |
-| `Shift+Delete` | Permanently delete selection |
-| `Ctrl+Shift+N` / `F7` | Create new folder |
+| `Ctrl+A` / `*` | Select all items / Invert selection |
+| `Ctrl+C` / `Ctrl+X` / `Ctrl+V` | Copy / Cut / Paste selection (non-blocking async) |
+| `F2` | Rename selected item |
+| `Ctrl+N` | Create new folder |
+| `Ctrl+Shift+N` | Create new empty file |
+| `Delete` | Move selection to System Trash (immediate) |
+| `d` | Move selection to Trash with confirmation dialog |
+| `Shift+Delete` | Permanently delete selection (confirmed) |
+| `m` / `Menu` / `Shift+F10` | Open context menu (also via Right Click) |
+| `Ctrl+J` | Open background job queue (view progress / cancel jobs) |
 | **Search & System** | |
-| `/` | Live in-place filter |
-| `Ctrl+F` | Non-blocking recursive search |
-| `e` | Open selection in `$EDITOR` |
+| `/` | Live in-place quick filter |
+| `Ctrl+F` | Non-blocking recursive search across subdirectories |
+| `e` | Open selection in `$EDITOR` / `$VISUAL` |
+| `p` | View selection read-only in `$PAGER` |
 | `` ` `` / `F4` | Launch terminal shell in current directory |
-| `?` / `F1` | Open Interactive Keybinding Cheatsheet |
+| `?` / `F1` | Open interactive keybinding cheatsheet |
 | `q` / `Ctrl+Q` | Quit Fenestra |
 
 ---
@@ -149,22 +181,29 @@ fenestra --help
 Fenestra is configured via a clean TOML file located at `~/.config/fenestra/config.toml`. The configuration is auto-generated on first launch if not present:
 
 ```toml
+version = 1
+
 [general]
-icon_style = "nerd"          # "nerd" | "unicode" | "ascii"
-ls_colors_enabled = true     # Render filename colors from $LS_COLORS
-confirm_delete = true        # Prompt confirmation before permanent delete
-default_view = "details"     # "details" | "tree_only"
+theme = "catppuccin-mocha"   # "catppuccin-mocha" | "tokyo-night" | "gruvbox" | "nord" | "solarized-dark" | "omarchy"
+show_hidden = false          # Show hidden and dotfiles by default
+dirs_first = true            # Group directories before files when sorting
+natural_sort = true          # Natural alphanumeric sorting (e.g. file2 before file10)
+mouse_enabled = true         # Full mouse clicking, scrolling, dragging & dropping
+icon_style = "nerd"          # Icon tier: "nerd" (Nerd Fonts v3), "unicode", or "ascii"
+ls_colors_enabled = true     # Apply colors from $LS_COLORS environment variable
+default_sort_column = "name" # "name" | "size" | "modified" | "extension" | "permissions"
+default_sort_direction = "ascending" # "ascending" | "descending"
 
-[theme]
-active_palette = "catppuccin" # "catppuccin" | "tokyonight" | "gruvbox" | "nord" | "solarized"
-omarchy_sync = true          # Watch ~/.config/omarchy/current/theme for live hot-reload
+[layout]
+show_sidebar = true          # Show places and directory tree sidebar
+sidebar_width_percent = 20   # Percentage width allocated to sidebar
+show_preview = false         # Start with preview panel open
+preview_width_percent = 35   # Percentage width when preview is docked on side
+preview_dock = "side"        # "side" (right column) | "bottom" (docked below table)
+preview_height_percent = 30  # Percentage height when preview is docked at bottom
 
-[preview]
-max_file_size_mb = 10        # Maximum file size to load in syntax preview
-image_protocol = "kitty"     # "kitty" | "sixel" | "iterm2" | "halfblock" | "auto"
-hex_bytes_per_row = 16
-
-# Custom user actions executed as safe argument vectors
+# Custom user actions (surfaced in context menu and cheat sheet)
+# Arguments support {file}, {path}, {selected}, and {dir} placeholders
 [[actions]]
 name = "Git Status"
 key = "g"
@@ -175,7 +214,12 @@ args = ["status"]
 name = "Extract Archive"
 key = "x"
 command = "tar"
-args = ["-xvf", "{file}"]
+args = ["xf", "{file}"]
+
+# Optional key remappings (from -> to)
+# [[remap]]
+# from = "ctrl+j"
+# to = "down"
 ```
 
 ---
