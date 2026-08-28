@@ -1,0 +1,41 @@
+name: publish-crates
+
+# Publish cardea to crates.io. Triggered MANUALLY (Actions → Publish to
+# crates.io → Run workflow) after the GitHub release is confirmed.
+#
+# Requires the CARGO_REGISTRY_TOKEN secret:
+#   Settings → Secrets and variables → Actions → New repository secret
+#   Name:  CARGO_REGISTRY_TOKEN
+#   Value: your crates.io API token (from https://crates.io/settings/tokens)
+#
+# The job fails fast if the token is missing, so an accidental run without
+# the secret does no harm.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: publish cardea
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Fail if CARGO_REGISTRY_TOKEN is not set
+        run: |
+          if [ -z "${CARGO_REGISTRY_TOKEN}" ]; then
+            echo "::error::CARGO_REGISTRY_TOKEN secret is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish to crates.io
+        run: cargo publish --token "${CARGO_REGISTRY_TOKEN}"
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

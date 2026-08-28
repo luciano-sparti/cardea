@@ -13,6 +13,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/cardea.svg?logo=rust)](https://crates.io/crates/cardea)
 [![CI](https://github.com/Luciano-Sparti/cardea/actions/workflows/ci.yml/badge.svg)](https://github.com/Luciano-Sparti/cardea/actions/workflows/ci.yml)
+[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-F16061?logo=ko-fi&logoColor=white)](https://ko-fi.com/lucianosp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Rust: 1.88+](https://img.shields.io/badge/Rust-1.88%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
 [![Built with Ratatui](https://img.shields.io/badge/TUI-Ratatui%200.29-green.svg)](https://ratatui.rs)
@@ -327,6 +328,12 @@ cardea/
 ## 🤝 Contributing
 
 Contributions, issues, and feature ideas are warmly welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and architecture overview.
+
+---
+
+## ☕ Support
+
+If Cardea saved you time or made your terminal workflow smoother, you can [support me on Ko-fi](https://ko-fi.com/lucianosp) — it helps keep open-source development active! 🙏
 
 ---
 
