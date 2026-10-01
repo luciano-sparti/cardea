@@ -131,7 +131,9 @@ pub fn render_status_bar(f: &mut Frame, app: &mut App, area: Rect, theme: &Theme
                 spans.push(Span::styled(" | ", Style::default().fg(theme.border)));
                 spans.push(Span::styled(
                     summary,
-                    Style::default().fg(theme.accent).add_modifier(Modifier::BOLD),
+                    Style::default()
+                        .fg(theme.accent)
+                        .add_modifier(Modifier::BOLD),
                 ));
             }
         }

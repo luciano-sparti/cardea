@@ -129,7 +129,7 @@ fn test_archive_creation_tar_gz_and_zip() {
     let tar_gz_path = dir.path().join("out.tar.gz");
     let zip_path = dir.path().join("out.zip");
 
-    assert!(cardea::fs::archive::create_archive(&tar_gz_path, &[doc.clone()]).is_ok());
+    assert!(cardea::fs::archive::create_archive(&tar_gz_path, std::slice::from_ref(&doc)).is_ok());
     assert!(tar_gz_path.exists());
     assert!(tar_gz_path.metadata().unwrap().len() > 0);
 

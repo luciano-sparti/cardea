@@ -93,12 +93,8 @@ pub fn batch_regex_rename(
     // Execute renames
     let mut completed = Vec::new();
     for (src, target) in planned {
-        std::fs::rename(&src, &target).map_err(|e| {
-            format!(
-                "Failed to rename {:?} to {:?}: {}",
-                src, target, e
-            )
-        })?;
+        std::fs::rename(&src, &target)
+            .map_err(|e| format!("Failed to rename {:?} to {:?}: {}", src, target, e))?;
         completed.push((src, target));
     }
 
@@ -109,4 +105,3 @@ pub fn compress_entries(dest_archive: &Path, sources: &[PathBuf]) -> Result<Path
     crate::fs::archive::create_archive(dest_archive, sources)?;
     Ok(dest_archive.to_path_buf())
 }
-

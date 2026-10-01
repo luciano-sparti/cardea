@@ -256,7 +256,9 @@ pub fn create_archive(dest_path: &Path, source_paths: &[std::path::PathBuf]) -> 
         Kind::Tar => create_tar(dest_path, source_paths),
         Kind::TarGz => create_tar_gz(dest_path, source_paths),
         Kind::TarXz => create_tar_xz(dest_path, source_paths),
-        Kind::SevenZ => Err("7z archive creation is not supported; use .zip or .tar.gz".to_string()),
+        Kind::SevenZ => {
+            Err("7z archive creation is not supported; use .zip or .tar.gz".to_string())
+        }
     }
 }
 
@@ -271,14 +273,16 @@ fn create_zip(dest: &Path, sources: &[std::path::PathBuf]) -> Result<(), String>
         if src.is_file() {
             zip.start_file(file_name, options)
                 .map_err(|e| format!("Failed to add file to zip: {}", e))?;
-            let mut f = File::open(src).map_err(|e| format!("Failed to read {}: {}", src.display(), e))?;
+            let mut f =
+                File::open(src).map_err(|e| format!("Failed to read {}: {}", src.display(), e))?;
             std::io::copy(&mut f, &mut zip)
                 .map_err(|e| format!("Failed to write to zip: {}", e))?;
         } else if src.is_dir() {
             add_dir_to_zip(&mut zip, src, Path::new(file_name), options)?;
         }
     }
-    zip.finish().map_err(|e| format!("Failed to finalize zip: {}", e))?;
+    zip.finish()
+        .map_err(|e| format!("Failed to finalize zip: {}", e))?;
     Ok(())
 }
 
@@ -307,54 +311,69 @@ fn add_dir_to_zip<W: std::io::Write + std::io::Seek>(
 }
 
 fn create_tar_gz(dest: &Path, sources: &[std::path::PathBuf]) -> Result<(), String> {
-    let file = File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
+    let file =
+        File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
     let enc = flate2::write::GzEncoder::new(file, flate2::Compression::default());
     let mut tar = tar::Builder::new(enc);
 
     for src in sources {
         let name = src.file_name().and_then(|n| n.to_str()).unwrap_or("entry");
         if src.is_file() {
-            let mut f = File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
-            tar.append_file(name, &mut f).map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
+            let mut f =
+                File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
+            tar.append_file(name, &mut f)
+                .map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
         } else if src.is_dir() {
-            tar.append_dir_all(name, src).map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
+            tar.append_dir_all(name, src)
+                .map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
         }
     }
-    tar.finish().map_err(|e| format!("Failed to finish tar.gz: {}", e))?;
+    tar.finish()
+        .map_err(|e| format!("Failed to finish tar.gz: {}", e))?;
     Ok(())
 }
 
 fn create_tar_xz(dest: &Path, sources: &[std::path::PathBuf]) -> Result<(), String> {
-    let file = File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
+    let file =
+        File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
     let enc = xz2::write::XzEncoder::new(file, 6);
     let mut tar = tar::Builder::new(enc);
 
     for src in sources {
         let name = src.file_name().and_then(|n| n.to_str()).unwrap_or("entry");
         if src.is_file() {
-            let mut f = File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
-            tar.append_file(name, &mut f).map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
+            let mut f =
+                File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
+            tar.append_file(name, &mut f)
+                .map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
         } else if src.is_dir() {
-            tar.append_dir_all(name, src).map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
+            tar.append_dir_all(name, src)
+                .map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
         }
     }
-    tar.finish().map_err(|e| format!("Failed to finish tar.xz: {}", e))?;
+    tar.finish()
+        .map_err(|e| format!("Failed to finish tar.xz: {}", e))?;
     Ok(())
 }
 
 fn create_tar(dest: &Path, sources: &[std::path::PathBuf]) -> Result<(), String> {
-    let file = File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
+    let file =
+        File::create(dest).map_err(|e| format!("Failed to create {}: {}", dest.display(), e))?;
     let mut tar = tar::Builder::new(file);
 
     for src in sources {
         let name = src.file_name().and_then(|n| n.to_str()).unwrap_or("entry");
         if src.is_file() {
-            let mut f = File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
-            tar.append_file(name, &mut f).map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
+            let mut f =
+                File::open(src).map_err(|e| format!("Failed to open {}: {}", src.display(), e))?;
+            tar.append_file(name, &mut f)
+                .map_err(|e| format!("Failed to add {}: {}", src.display(), e))?;
         } else if src.is_dir() {
-            tar.append_dir_all(name, src).map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
+            tar.append_dir_all(name, src)
+                .map_err(|e| format!("Failed to add dir {}: {}", src.display(), e))?;
         }
     }
-    tar.finish().map_err(|e| format!("Failed to finish tar: {}", e))?;
+    tar.finish()
+        .map_err(|e| format!("Failed to finish tar: {}", e))?;
     Ok(())
 }

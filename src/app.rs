@@ -1733,7 +1733,10 @@ impl App {
                         format!(" 󰛫 Compress {} item(s) to archive ", sources.len()),
                         "Compress",
                         default_archive_name,
-                        DialogAction::CompressArchive { sources, dest_dir: current_dir },
+                        DialogAction::CompressArchive {
+                            sources,
+                            dest_dir: current_dir,
+                        },
                     ));
                 }
             }
@@ -1741,11 +1744,16 @@ impl App {
                 let target_path = target.or_else(|| self.selected_entry().map(|e| e.path.clone()));
                 if let Some(path) = target_path {
                     if let Some(diff) = crate::fs::git::get_git_diff(&path) {
-                        self.set_status_info(format!("Diff for {:?} loaded in preview", path.file_name().unwrap_or_default()));
+                        self.set_status_info(format!(
+                            "Diff for {:?} loaded in preview",
+                            path.file_name().unwrap_or_default()
+                        ));
                         self.preview_text = Some(Some(diff));
                         self.show_preview = true;
                     } else {
-                        self.set_status_info("No git modifications found for this file".to_string());
+                        self.set_status_info(
+                            "No git modifications found for this file".to_string(),
+                        );
                     }
                 }
             }
@@ -2191,7 +2199,10 @@ impl App {
                 let archive_path = dest_dir.join(&name);
                 match crate::fs::ops::compress_entries(&archive_path, &sources) {
                     Ok(p) => {
-                        self.set_status_info(format!("Created archive {:?}", p.file_name().unwrap_or_default()));
+                        self.set_status_info(format!(
+                            "Created archive {:?}",
+                            p.file_name().unwrap_or_default()
+                        ));
                         self.refresh();
                     }
                     Err(e) => self.set_status_error(e),
@@ -2514,7 +2525,10 @@ impl App {
     /// Batch regex rename dialog for multiple selected files.
     pub fn request_batch_rename(&mut self, sources: Vec<PathBuf>) {
         self.dialog = Some(Dialog::prompt(
-            format!(" 󰈔 Batch Regex Rename ({} files) — format: regex/replacement ", sources.len()),
+            format!(
+                " 󰈔 Batch Regex Rename ({} files) — format: regex/replacement ",
+                sources.len()
+            ),
             "Batch Rename",
             String::new(),
             DialogAction::BatchRename(sources),

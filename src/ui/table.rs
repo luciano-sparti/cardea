@@ -301,7 +301,9 @@ pub fn render_table(
                 if let Some(git_stat) = gs.statuses.get(&entry.path) {
                     Cell::from(Span::styled(
                         format!("{} ", git_stat.badge()),
-                        Style::default().fg(git_stat.color()).add_modifier(Modifier::BOLD),
+                        Style::default()
+                            .fg(git_stat.color())
+                            .add_modifier(Modifier::BOLD),
                     ))
                 } else {
                     Cell::from("  ")

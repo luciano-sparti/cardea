@@ -151,7 +151,11 @@ pub fn query_git_status(path: &Path) -> Option<GitRepoStatus> {
                     }
                 }
             } else {
-                repo_status.branch = branch_part.split_whitespace().next().unwrap_or("").to_string();
+                repo_status.branch = branch_part
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("")
+                    .to_string();
             }
             continue;
         }
@@ -193,11 +197,7 @@ pub fn query_git_status(path: &Path) -> Option<GitRepoStatus> {
 }
 
 pub fn get_git_diff(path: &Path) -> Option<String> {
-    let parent = if path.is_file() {
-        path.parent()?
-    } else {
-        path
-    };
+    let parent = if path.is_file() { path.parent()? } else { path };
 
     let output = Command::new("git")
         .args(["diff", "HEAD", "--", path.to_str()?])
