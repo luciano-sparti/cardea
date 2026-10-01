@@ -64,6 +64,9 @@
 
 ### 🛡️ Safe & Resilient File Operations
 - **Non-Blocking Background Operations**: Copy, move, cut, paste, and batch delete off the main UI thread with interactive progress bars.
+- **Git Status Badges & Diff Preview**: Live repository detection, branch indicator in status bar, file status badges (`M` modified, `?` untracked, `+` staged, `!` ignored) in both table view and directory tree, plus interactive unified Git diff preview.
+- **Batch Regex Rename Modal**: Press `Ctrl+R` to open the batch rename dialog with regular expressions, capture groups (`$1`, `$2`), live collision detection, and tabular diff preview.
+- **Native Archive Compression**: Pack selected files/directories into `.tar.gz` or `.zip` archives directly via `Alt+C` or the right-click context menu.
 - **Freedesktop System Trash**: Accidental deletions are prevented by moving files to XDG Trash by default; permanent deletion is reserved for `Shift+Delete`.
 - **Conflict Resolution Dialogs**: Interactive conflict resolution prompts (Overwrite, Skip, Auto-Rename) when collisions are detected.
 
@@ -156,6 +159,8 @@ cardea --help
 | `Ctrl+A` / `*` | Select all items / Invert selection |
 | `Ctrl+C` / `Ctrl+X` / `Ctrl+V` | Copy / Cut / Paste selection (non-blocking async) |
 | `F2` | Rename selected item |
+| `Ctrl+R` | Batch Regex Rename modal (live match preview & collision checks) |
+| `Alt+C` | Compress selection into `.tar.gz` or `.zip` archive |
 | `Ctrl+N` | Create new folder |
 | `Ctrl+Shift+N` | Create new empty file |
 | `Delete` | Move selection to System Trash (immediate) |
