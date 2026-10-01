@@ -124,14 +124,16 @@ pub fn render_status_bar(f: &mut Frame, app: &mut App, area: Rect, theme: &Theme
             ));
         }
 
-        // Search progress indicator
-        if app.tab().search_running {
-            spans.push(Span::styled(
-                " | searching…",
-                Style::default()
-                    .fg(theme.filter_match)
-                    .add_modifier(Modifier::ITALIC),
-            ));
+        // Git branch and status indicator
+        if let Some(ref gs) = app.tab().git_status {
+            let summary = gs.summary_string();
+            if !summary.is_empty() {
+                spans.push(Span::styled(" | ", Style::default().fg(theme.border)));
+                spans.push(Span::styled(
+                    summary,
+                    Style::default().fg(theme.accent).add_modifier(Modifier::BOLD),
+                ));
+            }
         }
 
         spans

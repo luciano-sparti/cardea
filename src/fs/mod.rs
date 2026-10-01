@@ -5,6 +5,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 pub mod archive;
+pub mod git;
 pub mod ops;
 pub mod scanner;
 pub mod watcher;

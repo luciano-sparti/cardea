@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-09-30
+
+### Added
+- **Git Integration & Status Badges**:
+  - Live Git repository detection and file status tracking in `src/fs/git.rs`.
+  - Color-coded badges in file table: modified (`M`), untracked (`?`), staged (`+`), and deleted (`D`).
+  - Active branch and ahead/behind sync counts in the bottom status line (` main [⇡1 ⇣2]`).
+  - Interactive Git Diff inspection in the preview pane via context menu (`󰊢 Git Diff`).
+- **Batch Regex Rename Modal**:
+  - Multi-file renaming engine with regex capture group substitution and collision prevention in `src/fs/ops.rs`.
+  - Triggered automatically via `F2` when multiple files are selected, or via context menu.
+- **Native Archive Creation & Compression**:
+  - Direct archive creation for `.tar.gz`, `.zip`, `.tar.xz`, and `.tar` using pure Rust encoders (`flate2`, `zip`, `xz2`, `tar`).
+  - Added "󰛫 Compress to Archive…" action in context menu.
+
 ## [1.0.3] - 2026-08-27
 
 ### Added

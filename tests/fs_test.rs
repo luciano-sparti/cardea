@@ -100,3 +100,62 @@ fn test_config_toml_roundtrip() {
         deserialized.layout.sidebar_width_percent
     );
 }
+
+#[test]
+fn test_batch_regex_rename() {
+    let dir = tempdir().unwrap();
+    let f1 = dir.path().join("img_01_raw.png");
+    let f2 = dir.path().join("img_02_raw.png");
+    File::create(&f1).unwrap();
+    File::create(&f2).unwrap();
+
+    let sources = vec![f1.clone(), f2.clone()];
+    let res = cardea::fs::ops::batch_regex_rename(&sources, r"img_(\d+)_raw\.png", "photo_$1.png");
+    assert!(res.is_ok());
+
+    assert!(!f1.exists());
+    assert!(!f2.exists());
+    assert!(dir.path().join("photo_01.png").exists());
+    assert!(dir.path().join("photo_02.png").exists());
+}
+
+#[test]
+fn test_archive_creation_tar_gz_and_zip() {
+    let dir = tempdir().unwrap();
+    let doc = dir.path().join("doc.txt");
+    let mut file = File::create(&doc).unwrap();
+    writeln!(file, "Archive payload test").unwrap();
+
+    let tar_gz_path = dir.path().join("out.tar.gz");
+    let zip_path = dir.path().join("out.zip");
+
+    assert!(cardea::fs::archive::create_archive(&tar_gz_path, &[doc.clone()]).is_ok());
+    assert!(tar_gz_path.exists());
+    assert!(tar_gz_path.metadata().unwrap().len() > 0);
+
+    assert!(cardea::fs::archive::create_archive(&zip_path, &[doc]).is_ok());
+    assert!(zip_path.exists());
+    assert!(zip_path.metadata().unwrap().len() > 0);
+
+    let preview = cardea::fs::archive::preview_listing(&tar_gz_path);
+    assert!(preview.is_some());
+    assert!(preview.unwrap().contains("doc.txt"));
+}
+
+#[test]
+fn test_git_status_detection() {
+    let dir = tempdir().unwrap();
+    let res = cardea::fs::git::find_git_root(dir.path());
+    // In tempdir there is no .git
+    assert!(res.is_none());
+
+    // In current repo (cardea)
+    let current = std::env::current_dir().unwrap();
+    let res = cardea::fs::git::find_git_root(&current);
+    assert!(res.is_some());
+
+    let status = cardea::fs::git::query_git_status(&current);
+    assert!(status.is_some());
+    let status = status.unwrap();
+    assert!(!status.branch.is_empty());
+}

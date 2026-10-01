@@ -50,3 +50,63 @@ pub fn rename_entry(from: &Path, to_name: &str) -> Result<PathBuf, String> {
 
     Ok(target)
 }
+
+pub fn batch_regex_rename(
+    sources: &[PathBuf],
+    pattern: &str,
+    replacement: &str,
+) -> Result<Vec<(PathBuf, PathBuf)>, String> {
+    let re = regex::Regex::new(pattern).map_err(|e| format!("Invalid regex pattern: {}", e))?;
+
+    let mut planned = Vec::new();
+    let mut targets_seen = std::collections::HashSet::new();
+
+    for src in sources {
+        let parent = src.parent().unwrap_or_else(|| Path::new("/"));
+        let old_name = src
+            .file_name()
+            .and_then(|n| n.to_str())
+            .ok_or_else(|| format!("Invalid file name: {:?}", src))?;
+
+        let new_name = re.replace_all(old_name, replacement).to_string();
+        if new_name == old_name {
+            continue; // No change
+        }
+
+        let target = parent.join(&new_name);
+
+        if target.exists() && !sources.contains(&target) {
+            return Err(format!("Destination file already exists: {:?}", target));
+        }
+
+        if !targets_seen.insert(target.clone()) {
+            return Err(format!("Collision: multiple files rename to {:?}", target));
+        }
+
+        planned.push((src.clone(), target));
+    }
+
+    if planned.is_empty() {
+        return Err("No files matched the regex pattern or required changes".to_string());
+    }
+
+    // Execute renames
+    let mut completed = Vec::new();
+    for (src, target) in planned {
+        std::fs::rename(&src, &target).map_err(|e| {
+            format!(
+                "Failed to rename {:?} to {:?}: {}",
+                src, target, e
+            )
+        })?;
+        completed.push((src, target));
+    }
+
+    Ok(completed)
+}
+
+pub fn compress_entries(dest_archive: &Path, sources: &[PathBuf]) -> Result<PathBuf, String> {
+    crate::fs::archive::create_archive(dest_archive, sources)?;
+    Ok(dest_archive.to_path_buf())
+}
+

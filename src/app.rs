@@ -54,6 +54,7 @@ pub struct Tab {
     active_search_id: u64,
     pub search_matches: Vec<FileEntry>,
     pub search_running: bool,
+    pub git_status: Option<crate::fs::git::GitRepoStatus>,
 }
 
 thread_local! {
@@ -84,6 +85,7 @@ impl Tab {
             active_search_id: 0,
             search_matches: Vec::new(),
             search_running: false,
+            git_status: None,
         }
     }
 
@@ -183,6 +185,13 @@ pub enum DialogAction {
     DeletePermanently(Vec<PathBuf>),
     /// Rename the entry to the text entered in the dialog's prompt
     Rename(PathBuf),
+    /// Batch regex rename multiple files (sources, pattern/replacement)
+    BatchRename(Vec<PathBuf>),
+    /// Compress entries into a destination archive
+    CompressArchive {
+        sources: Vec<PathBuf>,
+        dest_dir: PathBuf,
+    },
     CreateFolder(PathBuf),
     CreateFile(PathBuf),
     /// Re-run a failed batch transfer with the given remaining sources
@@ -263,6 +272,8 @@ pub enum ContextAction {
     DeletePermanently,
     Properties,
     ExtractHere,
+    Compress,
+    GitDiff,
     /// Runs the user action at the given index in `App::user_actions`
     UserAction(usize),
 }
@@ -429,7 +440,10 @@ impl Dialog {
         };
         let name = prompt.buffer.trim();
         if name.is_empty() {
-            return Err("Name cannot be empty".to_string());
+            return Err("Input cannot be empty".to_string());
+        }
+        if matches!(self.action, DialogAction::BatchRename(_)) {
+            return Ok(());
         }
         if name == "." || name == ".." || name.contains('/') || name.contains('\0') {
             return Err(format!("Invalid name: {:?}", name));
@@ -847,6 +861,7 @@ impl App {
         self.context_menu = None;
         self.breadcrumb_selected = 0;
         self.disk_free = crate::fs::disk_free_bytes(&dir);
+        self.tab_mut().git_status = crate::fs::git::query_git_status(&dir);
 
         // Start filesystem watcher on new directory
         self.watcher.watch(&dir, self.event_tx.clone());
@@ -996,7 +1011,9 @@ impl App {
     /// Rescans the current directory in the background. Existing entries stay
     /// visible until the first chunk of the fresh scan arrives (no flicker).
     pub fn refresh(&mut self) {
-        self.active_scan_id = self.scanner.scan_directory(self.tab().current_dir.clone());
+        let dir = self.tab().current_dir.clone();
+        self.tab_mut().git_status = crate::fs::git::query_git_status(&dir);
+        self.active_scan_id = self.scanner.scan_directory(dir);
     }
 
     /// Called from `tick` after watcher activity settles, so event bursts
@@ -1298,7 +1315,7 @@ impl App {
                 " 󰀬 Delete Permanently…",
                 ContextAction::DeletePermanently,
             ));
-            // Archive extraction
+            // Archive extraction & creation
             if target_path
                 .map(crate::fs::archive::is_archive)
                 .unwrap_or(false)
@@ -1308,6 +1325,14 @@ impl App {
                     ContextAction::ExtractHere,
                 ));
             }
+            items.push(ContextMenuItem::enabled(
+                " 󰛫 Compress to Archive…",
+                ContextAction::Compress,
+            ));
+            items.push(ContextMenuItem::enabled(
+                " 󰊢 Git Diff",
+                ContextAction::GitDiff,
+            ));
             items.push(ContextMenuItem::separator());
             items.push(ContextMenuItem::enabled(
                 " 󰋽 Properties",
@@ -1688,6 +1713,40 @@ impl App {
                         }
                     });
                     self.set_status_info(format!("Extracting {}…", name_for_status));
+                }
+            }
+            ContextAction::Compress => {
+                let sources: Vec<PathBuf> = if !self.tab().multi_selected.is_empty() {
+                    self.tab().multi_selected.iter().cloned().collect()
+                } else if let Some(p) = target {
+                    vec![p]
+                } else if let Some(e) = self.selected_entry() {
+                    vec![e.path.clone()]
+                } else {
+                    Vec::new()
+                };
+                if !sources.is_empty() {
+                    let first_name = sources[0].file_name().unwrap_or_default().to_string_lossy();
+                    let default_archive_name = format!("{}.tar.gz", first_name);
+                    let current_dir = self.tab().current_dir.clone();
+                    self.dialog = Some(Dialog::prompt(
+                        format!(" 󰛫 Compress {} item(s) to archive ", sources.len()),
+                        "Compress",
+                        default_archive_name,
+                        DialogAction::CompressArchive { sources, dest_dir: current_dir },
+                    ));
+                }
+            }
+            ContextAction::GitDiff => {
+                let target_path = target.or_else(|| self.selected_entry().map(|e| e.path.clone()));
+                if let Some(path) = target_path {
+                    if let Some(diff) = crate::fs::git::get_git_diff(&path) {
+                        self.set_status_info(format!("Diff for {:?} loaded in preview", path.file_name().unwrap_or_default()));
+                        self.preview_text = Some(Some(diff));
+                        self.show_preview = true;
+                    } else {
+                        self.set_status_info("No git modifications found for this file".to_string());
+                    }
                 }
             }
             ContextAction::UserAction(idx) => self.run_user_action_for(idx, target),
@@ -2105,6 +2164,39 @@ impl App {
                     Err(e) => self.set_status_error(e),
                 }
             }
+            DialogAction::BatchRename(sources) => {
+                let text = dialog
+                    .prompt
+                    .map(|p| p.buffer.trim().to_string())
+                    .unwrap_or_default();
+                let (pat, repl) = if let Some((p, r)) = text.split_once('/') {
+                    (p, r)
+                } else {
+                    (text.as_str(), "")
+                };
+                match crate::fs::ops::batch_regex_rename(&sources, pat, repl) {
+                    Ok(renamed) => {
+                        self.clear_selection();
+                        self.set_status_info(format!("Batch renamed {} item(s)", renamed.len()));
+                        self.refresh();
+                    }
+                    Err(e) => self.set_status_error(e),
+                }
+            }
+            DialogAction::CompressArchive { sources, dest_dir } => {
+                let name = dialog
+                    .prompt
+                    .map(|p| p.buffer.trim().to_string())
+                    .unwrap_or_default();
+                let archive_path = dest_dir.join(&name);
+                match crate::fs::ops::compress_entries(&archive_path, &sources) {
+                    Ok(p) => {
+                        self.set_status_info(format!("Created archive {:?}", p.file_name().unwrap_or_default()));
+                        self.refresh();
+                    }
+                    Err(e) => self.set_status_error(e),
+                }
+            }
             DialogAction::CreateFolder(parent) => {
                 let name = dialog
                     .prompt
@@ -2406,12 +2498,27 @@ impl App {
         None
     }
 
-    /// F2 — rename prompt pre-filled with the cursor's entry name.
+    /// F2 / r — rename prompt pre-filled with the cursor's entry name, or batch rename if multi-selected.
     pub fn request_rename(&mut self) {
+        if self.tab().multi_selected.len() > 1 {
+            let sources: Vec<PathBuf> = self.tab().multi_selected.iter().cloned().collect();
+            self.request_batch_rename(sources);
+            return;
+        }
         let Some(entry) = self.selected_entry().cloned() else {
             return;
         };
         self.request_rename_path(entry.path);
+    }
+
+    /// Batch regex rename dialog for multiple selected files.
+    pub fn request_batch_rename(&mut self, sources: Vec<PathBuf>) {
+        self.dialog = Some(Dialog::prompt(
+            format!(" 󰈔 Batch Regex Rename ({} files) — format: regex/replacement ", sources.len()),
+            "Batch Rename",
+            String::new(),
+            DialogAction::BatchRename(sources),
+        ));
     }
 
     /// Rename prompt for an explicit path (context menu target).
@@ -3153,7 +3260,7 @@ impl App {
                 self.request_permanent_delete();
             }
 
-            // Rename (F2, desktop convention) & create folder/file
+            // Rename (F2) & create folder/file
             (KeyModifiers::NONE, KeyCode::F(2)) => {
                 self.request_rename();
             }

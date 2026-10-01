@@ -1,6 +1,6 @@
 [package]
 name = "cardea"
-version = "1.0.3"
+version = "1.1.0"
 edition = "2021"
 rust-version = "1.88"
 authors = ["Cardea Contributors"]
@@ -55,7 +55,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 syntect = { version = "5", default-features = false, features = ["default-fancy"] }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp", "ico", "tiff"] }
 ratatui-image = { version = "8.0", default-features = false }
-zip = { version = "8.3", default-features = false }
+zip = { version = "8.3", default-features = false, features = ["deflate"] }
 tar = "0.4"
 flate2 = "1"
 xz2 = { version = "0.1", features = ["static"] }
@@ -63,6 +63,7 @@ sevenz-rust = "0.6"
 mime_guess = "2"
 sha2 = "0.10"
 lscolors = { version = "0.20", default-features = false }
+regex = "1.10"
 
 [dev-dependencies]
 tempfile = "3.17"

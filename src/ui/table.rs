@@ -285,20 +285,29 @@ pub fn render_table(
                 theme_name_style
             };
 
-            let check_cell = if tab.multi_selected.is_empty() {
-                Cell::from("  ")
-            } else if is_multi_checked {
+            let check_cell = if is_multi_checked {
                 Cell::from(Span::styled(
                     crate::icons::checked_box_icon(cfg.icon_style),
                     Style::default().fg(theme.accent),
                 ))
-            } else {
+            } else if !tab.multi_selected.is_empty() {
                 Cell::from(Span::styled(
                     crate::icons::unchecked_box_icon(cfg.icon_style),
                     Style::default()
                         .fg(theme.status_fg)
                         .add_modifier(Modifier::DIM),
                 ))
+            } else if let Some(ref gs) = tab.git_status {
+                if let Some(git_stat) = gs.statuses.get(&entry.path) {
+                    Cell::from(Span::styled(
+                        format!("{} ", git_stat.badge()),
+                        Style::default().fg(git_stat.color()).add_modifier(Modifier::BOLD),
+                    ))
+                } else {
+                    Cell::from("  ")
+                }
+            } else {
+                Cell::from("  ")
             };
 
             let row_cells = vec![
